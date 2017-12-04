@@ -14,7 +14,7 @@ class Client:
         self._session.save_cookies_from_response(response, uri)
         return self._session.cookies['csrftoken']
 
-    async def _send_message(self, method: str, body: str) -> dict:
+    async def _send_message(self, method: str, body: dict) -> dict:
         uri = 'https://www.pandora.com/api/' + method
         message = soupy.Message.new_for_uri(soupy.Method.POST, uri)
         message.headers = {'X-CsrfToken': self._csrf_token,
@@ -34,7 +34,7 @@ class Client:
         self._auth_token = response['authToken']
         return response
 
-    async def get_stations(self, amount: int=100) -> dict:
+    async def get_stations(self, amount: int=250) -> dict:
         return await self._send_message('v1/station/getStations', {
             'pageSize': amount,
         })
