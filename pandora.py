@@ -12,13 +12,7 @@ class Client:
         message = soupy.Message.new_for_uri(soupy.Method.HEAD, uri)
         response = await self._session.send_message(message)
         self._session.save_cookies_from_response(response, uri)
-        cookies = response.headers.get('Set-Cookie', '').split(',')
-        for cookie in cookies:
-            cookie = cookie.lstrip()
-            if cookie.startswith('csrftoken='):
-                token = cookie[len('csrftoken='):].split(';', 1)[0]
-                return token
-        raise Exception('Failed to get CSRF token')
+        return self._session.cookies['csrftoken']
 
     async def _send_message(self, method: str, body: str):
         uri = 'https://www.pandora.com/api/v1/' + method
@@ -28,8 +22,7 @@ class Client:
         message.set_json_body(body)
 
         response = await self._session.send_message(message)
-        data = response.get_json_body()
-        return data
+        return response.get_json_body()
 
     async def login(self, email: str, password: str):
         self._csrf_token = await self._get_csrf_token()

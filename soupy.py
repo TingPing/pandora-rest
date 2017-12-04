@@ -92,3 +92,7 @@ class Session:
             raise Exception('Failed to save cookies')
 
         self._cookies.add_cookie(cookie)
+
+    @property
+    def cookies(self) -> Dict[str, str]:
+        return {c.get_name(): c.get_value() for c in self._cookies.all_cookies()}
