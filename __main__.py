@@ -4,12 +4,14 @@ from pandora import Client
 
 gbulb.install()
 loop = asyncio.get_event_loop()
-
-
-def on_login(future):
-    print(future.result())
-
 client = Client()
-asyncio.ensure_future(client.login('bob@bob.com', 'pass')).add_done_callback(on_login)
+
+
+async def login():
+    print(await client.login('bob@bob.com', 'password'))
+    print(await client.get_stations())
+    
+
+asyncio.ensure_future(login()).add_done_callback(lambda x: loop.stop())
 
 loop.run_forever()

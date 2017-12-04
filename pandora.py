@@ -33,3 +33,8 @@ class Client:
         })
         self._auth_token = response['authToken']
         return response
+
+    async def get_stations(self, amount: int=100) -> dict:
+        return await self._send_message('v1/station/getStations', {
+            'pageSize': amount,
+        })
