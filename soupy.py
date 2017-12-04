@@ -36,7 +36,7 @@ class Method(enum.Enum):
 class Message:
     def __init__(self, message: Soup.Message):
         self._message = message
-        
+
     @classmethod
     def new_for_uri(cls, method: Method, uri: str):
         message = Soup.Message.new(method.value, uri)
@@ -45,26 +45,35 @@ class Message:
     @property
     def headers(self) -> Dict[str, str]:
         headers = self._message.props.response_headers
-        s = set(); headers.foreach(lambda k, v: s.add(k))
+        s = set()
+        headers.foreach(lambda k, v: s.add(k))
         return {k: headers.get_list(k) for k in s}
 
-    def add_header(self, key: str, value: str):
-        headers = self._message.props.request_headers
-        headers.append(key, value)
+    @headers.setter
+    def headers(self, headers: Dict[str, str]):
+        h = self._message.props.request_headers
+        h.clear()
+        for k, v in headers.items():
+            h.append(k, v)
 
-    def set_json_body(self, body: dict):
+    @property
+    def json_body(self) -> dict:
+        data = self._message.props.response_body_data.get_data()
+        return json.loads(data.decode('utf-8')) if data else ''
+
+    @json_body.setter
+    def json_body(self, body: dict):
         self._message.set_request('application/json;charset=utf-8',
                                   Soup.MemoryUse.COPY,
                                   json.dumps(body).encode('utf-8'))
 
-    def get_json_body(self) -> dict:
-        data = self._message.props.response_body_data.get_data().decode('utf-8')
-        return json.loads(data)
-
     def __str__(self):
-        return f'''{self._message.props.uri.to_string(False)} {self._message.props.method}\n
-{self._soup_headers_to_string(self._message.props.request_headers)}\n
-{json.dumps(json.loads(self._message.props.request_body_data.get_data().decode('utf-8')), indent=3)}'''
+        jb = self.json_body
+        body = f'\n{json.dumps(jb, indent=3)}' if jb else ''
+        headers = self.headers
+        header = json.dumps(headers, indent=3) if headers else ''
+        uri = self._message.props.uri.to_string(False)
+        return f'''{uri}\n{header}{body}'''
 
 
 class Session:

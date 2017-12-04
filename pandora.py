@@ -15,22 +15,21 @@ class Client:
         return self._session.cookies['csrftoken']
 
     async def _send_message(self, method: str, body: str) -> dict:
-        uri = 'https://www.pandora.com/api/v1/' + method
+        uri = 'https://www.pandora.com/api/' + method
         message = soupy.Message.new_for_uri(soupy.Method.POST, uri)
-        message.add_header('X-CsrfToken', self._csrf_token)
-        message.add_header('X-AuthToken', self._auth_token)
-        message.set_json_body(body)
+        message.headers = {'X-CsrfToken': self._csrf_token,
+                           'X-AuthToken': self._auth_token}
+        message.json_body = body
 
         response = await self._session.send_message(message)
-        return response.get_json_body()
+        return response.json_body
 
     async def login(self, email: str, password: str) -> dict:
         self._csrf_token = await self._get_csrf_token()
 
-        response = await self._send_message('auth/login', {
+        response = await self._send_message('v1/auth/login', {
             'username': email,
             'password': password,
         })
         self._auth_token = response['authToken']
         return response
-
