@@ -1,4 +1,31 @@
 import soupy
+from typing import List
+
+
+class Track:
+    def __init__(self, data: dict):
+        self.title = data['songTitle']
+        self.music_id = data['musicId']
+        self.token = data['trackToken']
+        self.length = data['trackLength']
+        self.gain = float(data['fileGain'])
+        self.audio_url = data['audioURL']
+        self.audio_encoding = data['audioEncoding']
+        self.art = {i['size']: i['url'] for i in data['albumArt']}
+
+    def __repr__(self):
+        return f"<Track '{self.title}'>"
+
+
+class Station:
+    def __init__(self, data: dict):
+        self.name = data['name']
+        self.station_id = data['stationId']
+        self.art = {i['size']: i['url'] for i in data['art']}
+        self.is_thumbprint = data['isThumbprint']
+
+    def __repr__(self):
+        return f"<Station '{self.name}'>"
 
 
 class Client:
@@ -34,7 +61,17 @@ class Client:
         self._auth_token = response['authToken']
         return response
 
-    async def get_stations(self, amount: int=250) -> dict:
-        return await self._send_message('v1/station/getStations', {
+    async def get_stations(self, amount: int=250) -> List[Station]:
+        response = await self._send_message('v1/station/getStations', {
             'pageSize': amount,
         })
+        return [Station(s) for s in response['stations']]
+
+    async def get_playlist_fragment(self, station: Station, is_start=True) -> List[Track]:
+        response = await self._send_message('v1/playlist/getFragment', {
+            'stationId': station.station_id,
+            'isStationStart': is_start,
+            'fragmentRequestReason': 'Normal',  # TODO
+            'audioFormat': 'mp3',  # TODO: aacplus and maybe more formats
+        })
+        return [Track(t) for t in response['tracks']]

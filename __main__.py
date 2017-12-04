@@ -8,8 +8,12 @@ client = Client()
 
 
 async def login():
-    print(await client.login('bob@bob.com', 'password'))
-    print(await client.get_stations())
+    response = await client.login('tngpng@gmail.com', 'password')
+    print(response)
+    stations = await client.get_stations()
+    print(stations)
+    playlist = await client.get_playlist_fragment(stations[0])
+    print(playlist)
     
 
 asyncio.ensure_future(login()).add_done_callback(lambda x: loop.stop())
