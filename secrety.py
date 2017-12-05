@@ -9,6 +9,7 @@ import gi
 gi.require_version('Secret', '1')
 from gi.repository import GLib, Secret
 import logging
+from typing import Awaitable
 
 
 class SecretService:
@@ -22,7 +23,7 @@ class SecretService:
     def __init__(self):
         self._current_collection = Secret.COLLECTION_DEFAULT
 
-    def unlock_keyring(self) -> asyncio.Future:
+    def unlock_keyring(self) -> Awaitable:
         future = asyncio.Future()
 
         def on_unlock_finish(source, result, data):
@@ -75,7 +76,7 @@ class SecretService:
                            on_get_finish, None)
         return future
 
-    def get_account_password(self, email: str) -> asyncio.Future:
+    def get_account_password(self, email: str) -> Awaitable[str]:
         future = asyncio.Future()
 
         def on_password_lookup_finish(source, result, data):
@@ -95,7 +96,7 @@ class SecretService:
         )
         return future
 
-    def set_account_password(self, old_email: str, new_email: str, password: str) -> asyncio.Future:
+    def set_account_password(self, old_email: str, new_email: str, password: str) -> Awaitable[bool]:
         future = asyncio.Future()
 
         def on_password_store_finish(source, result, data):

@@ -10,7 +10,7 @@ import gi
 gi.require_version('Soup', '2.4')
 from gi.repository import Soup
 import json
-from typing import Dict
+from typing import Awaitable, Dict
 
 
 class SoupException(Exception):
@@ -82,18 +82,19 @@ class Session:
         self._cookies = Soup.CookieJar()
         self._session.add_feature(self._cookies)
 
-    def send_message(self, message: Message) -> asyncio.Future:
-        def on_response(session, response_message, future):
+    def send_message(self, message: Message) -> Awaitable[Message]:
+        future = asyncio.Future()
+
+        def on_response(session, response_message, user_data):
             if response_message.status_code != 200:
                 future.set_exception(SoupException(response_message))
             else:
                 future.set_result(Message(response_message))
 
-        future = asyncio.Future()
         self._session.queue_message(message._message, on_response, future)
         return future
 
-    def save_cookies_from_response(self, response: Message, origin: str):
+    def save_cookies_from_response(self, response: Message, origin: str) -> None:
         cookies = response.headers.get('Set-Cookie', '')
         # FIXME: libsoup bindings should accept None for uri
         cookie = Soup.Cookie.parse(cookies, Soup.URI.new(origin))
