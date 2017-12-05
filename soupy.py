@@ -24,7 +24,7 @@ class SoupException(Exception):
         self.error_message = data['errorString']
 
     def __str__(self):
-        return f'{self.error_message} ({self.error_code}): {self.message}'
+        return '{} ({}): {}'.format(self.error_message, self.error_code, self.message)
 
 
 class Method(enum.Enum):
@@ -69,11 +69,11 @@ class Message:
 
     def __str__(self):
         jb = self.json_body
-        body = f'\n{json.dumps(jb, indent=3)}' if jb else ''
+        body = '\n' + json.dumps(jb, indent=3) if jb else ''
         headers = self.headers
         header = json.dumps(headers, indent=3) if headers else ''
         uri = self._message.props.uri.to_string(False)
-        return f'''{uri}\n{header}{body}'''
+        return '{}\n{}{}'.format(uri, header, body)
 
 
 class Session:
