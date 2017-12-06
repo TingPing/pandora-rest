@@ -1,5 +1,11 @@
+import enum
 import soupy
 from typing import List
+
+
+class AudioFormat(enum.Enum):
+    MP3 = 'mp3'
+    AACPLUS = 'aacplus'
 
 
 class Track:
@@ -67,11 +73,12 @@ class Client:
         })
         return [Station(s) for s in response['stations']]
 
-    async def get_playlist_fragment(self, station: Station, is_start=True) -> List[Track]:
+    async def get_playlist_fragment(self, station: Station, is_start=True,
+                                    audio_format: AudioFormat=AudioFormat.MP3) -> List[Track]:
         response = await self._send_message('v1/playlist/getFragment', {
             'stationId': station.station_id,
             'isStationStart': is_start,
             'fragmentRequestReason': 'Normal',  # TODO
-            'audioFormat': 'mp3',  # TODO: aacplus and maybe more formats
+            'audioFormat': audio_format.value,  # TODO: aacplus and maybe more formats
         })
         return [Track(t) for t in response['tracks']]
