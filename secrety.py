@@ -17,7 +17,7 @@ class SecretService:
     _account_schema = Secret.Schema.new(
         'io.github.Pithos.Account',
         Secret.SchemaFlags.NONE,
-        {'email': Secret.SchemaAttributeType.STRING},
+        {'Credentials': Secret.SchemaAttributeType.STRING},
     )
 
     def __init__(self):
@@ -76,27 +76,30 @@ class SecretService:
                            on_get_finish, None)
         return future
 
-    def get_account_password(self, email: str) -> Awaitable[str]:
+    def get_account_credentials(self, account_name: str) -> Awaitable[str, str]:
         future = asyncio.Future()  # type: asyncio.Future
 
         def on_password_lookup_finish(source, result, data):
             try:
-                password = Secret.password_lookup_finish(result) or ''
+                creds = Secret.password_lookup_finish(result)
             except GLib.Error as e:
                 future.set_exception(e)
             else:
-                future.set_result(password)
+                email, password = creds.split('\n') if creds else ('', '')
+                future.set_result(email, password)
 
         Secret.password_lookup(
             self._account_schema,
-            {'email': email},
+            {'Credentials': account_name},
             None,
             on_password_lookup_finish,
             None,
         )
         return future
 
-    def set_account_password(self, old_email: str, new_email: str, password: str) -> Awaitable[bool]:
+    def set_account_credentials(self, account_name: str, email: str, password: str) -> Awaitable[bool]:
+        # account_name can be totally arbitrary and is only used
+        # to differentiate between the sets of Credentials.
         future = asyncio.Future()  # type: asyncio.Future
 
         def on_password_store_finish(source, result, data):
@@ -104,48 +107,37 @@ class SecretService:
                 success = Secret.password_store_finish(result)
             except GLib.Error as e:
                 future.set_exception(e)
-            future.set_result(success)
+            else:
+                future.set_result(success)
+
+        Secret.password_store(
+            self._account_schema,
+            {'Credentials': account_name},
+            self._current_collection,
+            'Pandora Account',
+            '\n'.join((email, password)),
+            None,
+            on_password_store_finish,
+            None,
+        )
+        return future
+
+    def remove_account_credentials(self, account_name: str) -> Awaitable[bool]:
+        future = asyncio.Future()  # type: asyncio.Future
 
         def on_password_clear_finish(source, result, data):
             try:
-                password_removed = Secret.password_clear_finish(result)
-                if password_removed:
-                    logging.debug('Cleared password for: {}'.format(old_email))
-                else:
-                    logging.debug('No password found to clear for: {}'.format(old_email))
+                success = Secret.password_clear_finish(result)
             except GLib.Error as e:
                 future.set_exception(e)
             else:
-                Secret.password_store(
-                    self._account_schema,
-                    {'email': new_email},
-                    self._current_collection,
-                    'Pandora Account',
-                    password,
-                    None,
-                    on_password_store_finish,
-                    None,
-                )
+                future.set_result(success)
 
-        if old_email and old_email != new_email:
-            Secret.password_clear(
-                self._account_schema,
-                {'email': old_email},
-                None,
-                on_password_clear_finish,
-                None,
-            )
-
-        else:
-            Secret.password_store(
-                self._account_schema,
-                {'email': new_email},
-                self._current_collection,
-                'Pandora Account',
-                password,
-                None,
-                on_password_store_finish,
-                None,
-            )
-
+        Secret.password_clear(
+            self._account_schema,
+            {'Credentials': account_name},
+            None,
+            on_password_clear_finish,
+            None,
+        )
         return future
