@@ -3,7 +3,7 @@ from typing import List
 
 
 class Track:
-    def __init__(self, data: dict):
+    def __init__(self, data: dict) -> None:
         self.title = data['songTitle']
         self.music_id = data['musicId']
         self.token = data['trackToken']
@@ -14,18 +14,18 @@ class Track:
         self.art = {i['size']: i['url'] for i in data['albumArt']}
 
     def __repr__(self):
-        return f"<Track '{self.title}'>"
+        return "<Track '{}'>".format(self.title)
 
 
 class Station:
-    def __init__(self, data: dict):
+    def __init__(self, data: dict) -> None:
         self.name = data['name']
         self.station_id = data['stationId']
         self.art = {i['size']: i['url'] for i in data['art']}
         self.is_thumbprint = data['isThumbprint']
 
     def __repr__(self):
-        return f"<Station '{self.name}'>"
+        return "<Station '{}'>".format(self.name)
 
 
 class Client:

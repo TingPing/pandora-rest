@@ -14,7 +14,7 @@ from typing import Awaitable, Dict
 
 
 class SoupException(Exception):
-    def __init__(self, message: Soup.Message):
+    def __init__(self, message: Soup.Message) -> None:
         # self.status_code = message.props.status_code
         # self.status = Soup.Status(self.status_code).value_name
         data = message.props.response_body_data.get_data().decode('utf-8')
@@ -23,7 +23,7 @@ class SoupException(Exception):
         self.error_code = data['errorCode']
         self.error_message = data['errorString']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return '{} ({}): {}'.format(self.error_message, self.error_code, self.message)
 
 
@@ -34,7 +34,7 @@ class Method(enum.Enum):
 
 
 class Message:
-    def __init__(self, message: Soup.Message):
+    def __init__(self, message: Soup.Message) -> None:
         self._message = message
 
     @classmethod
@@ -83,7 +83,7 @@ class Session:
         self._session.add_feature(self._cookies)
 
     def send_message(self, message: Message) -> Awaitable[Message]:
-        future = asyncio.Future()
+        future = asyncio.Future()  # type: asyncio.Future
 
         def on_response(session, response_message, user_data):
             if response_message.status_code != 200:

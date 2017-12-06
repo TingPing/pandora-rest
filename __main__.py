@@ -20,7 +20,6 @@ async def login():
     print(stations)
     playlist = await client.get_playlist_fragment(stations[0])
     print(playlist)
-    
 
 asyncio.ensure_future(login()).add_done_callback(lambda x: loop.stop())
 

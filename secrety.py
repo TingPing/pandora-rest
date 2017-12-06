@@ -24,7 +24,7 @@ class SecretService:
         self._current_collection = Secret.COLLECTION_DEFAULT
 
     def unlock_keyring(self) -> Awaitable:
-        future = asyncio.Future()
+        future = asyncio.Future()  # type: asyncio.Future
 
         def on_unlock_finish(source, result, data):
             service, default_collection = data
@@ -77,7 +77,7 @@ class SecretService:
         return future
 
     def get_account_password(self, email: str) -> Awaitable[str]:
-        future = asyncio.Future()
+        future = asyncio.Future()  # type: asyncio.Future
 
         def on_password_lookup_finish(source, result, data):
             try:
@@ -97,7 +97,7 @@ class SecretService:
         return future
 
     def set_account_password(self, old_email: str, new_email: str, password: str) -> Awaitable[bool]:
-        future = asyncio.Future()
+        future = asyncio.Future()  # type: asyncio.Future
 
         def on_password_store_finish(source, result, data):
             try:
