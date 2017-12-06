@@ -1,5 +1,7 @@
 """
 Provides slightly more pythonic bindings to libsoup
+
+The exact behavior is largely tailored to usage within Pithos.
 """
 
 __license__ = 'GPL-3.0+'
@@ -27,30 +29,26 @@ class SoupException(Exception):
         return '{} ({}): {}'.format(self.error_message, self.error_code, self.message)
 
 
-class Method(enum.Enum):
-    POST = 'POST'
-    HEAD = 'HEAD'
-    GET = 'GET'
-
-
 class Message:
-    def __init__(self, message: Soup.Message) -> None:
+    def __init__(self, message: Soup.Message, request: bool=False) -> None:
         self._message = message
+        self._request = request
 
     @classmethod
-    def new_for_uri(cls, method: Method, uri: str):
-        message = Soup.Message.new(method.value, uri)
-        return cls(message)
+    def new_for_uri(cls, method: str, uri: str):
+        message = Soup.Message.new(method, uri)
+        return cls(message, request=True)
 
     @property
     def headers(self) -> Dict[str, str]:
-        headers = self._message.props.response_headers
+        headers = self._message.props.request_headers if self._request else self._message.props.response_headers
         s = set()
         headers.foreach(lambda k, v: s.add(k))
         return {k: headers.get_list(k) for k in s}
 
     @headers.setter
     def headers(self, headers: Dict[str, str]):
+        assert self._request is True
         h = self._message.props.request_headers
         h.clear()
         for k, v in headers.items():
@@ -58,14 +56,16 @@ class Message:
 
     @property
     def json_body(self) -> dict:
-        data = self._message.props.response_body_data.get_data()
+        data = self._message.props.request_body_data if self._request else self._message.props.response_body_data
+        data = data.get_data()
         return json.loads(data.decode('utf-8')) if data else ''
 
     @json_body.setter
-    def json_body(self, body: dict):
+    def json_body(self, json_body: dict):
+        assert self._request is True
         self._message.set_request('application/json;charset=utf-8',
                                   Soup.MemoryUse.COPY,
-                                  json.dumps(body).encode('utf-8'))
+                                  json.dumps(json_body).encode('utf-8'))
 
     def __str__(self):
         jb = self.json_body
@@ -75,6 +75,9 @@ class Message:
         uri = self._message.props.uri.to_string(False)
         return '{}\n{}{}'.format(uri, header, body)
 
+    def __repr__(self):
+        uri = self._message.props.uri.to_string(False)
+        return "<Message '{}': '{}' - '{}'>".format(uri, self.headers, self.body)
 
 class Session:
     def __init__(self):
@@ -82,26 +85,40 @@ class Session:
         self._cookies = Soup.CookieJar()
         self._session.add_feature(self._cookies)
 
-    def send_message(self, message: Message) -> Awaitable[Message]:
+    async def head(self, uri: str) -> Message:
+        """Sends HTTP HEAD request. Cookies in response are saved to session"""
+        message = Message.new_for_uri('HEAD', uri)
+        response = await self._send_message(message)
+        self._save_cookies_from_response(response, uri)
+        return response
+
+    async def post(self, uri: str, json_body: dict=None, headers: dict=None) -> Message:
+        """Sends HTTP POST request."""
+        message = Message.new_for_uri('POST', uri)
+        if headers is not None:
+            message.headers = headers
+        if json_body is not None:
+            message.json_body = json_body
+        return await self._send_message(message)
+
+    def _send_message(self, message: Message) -> Awaitable[Message]:
         future = asyncio.Future()  # type: asyncio.Future
 
-        def on_response(session, response_message, user_data):
+        def on_response(session, response_message):
             if response_message.status_code != 200:
                 future.set_exception(SoupException(response_message))
             else:
                 future.set_result(Message(response_message))
 
-        self._session.queue_message(message._message, on_response, future)
+        self._session.queue_message(message._message, on_response)
         return future
 
-    def save_cookies_from_response(self, response: Message, origin: str) -> None:
+    def _save_cookies_from_response(self, response: Message, origin: str) -> None:
         cookies = response.headers.get('Set-Cookie', '')
         # FIXME: libsoup bindings should accept None for uri
         cookie = Soup.Cookie.parse(cookies, Soup.URI.new(origin))
-        if cookie is None:
-            raise Exception('Failed to save cookies')
-
-        self._cookies.add_cookie(cookie)
+        if cookie is not None:
+            self._cookies.add_cookie(cookie)
 
     @property
     def cookies(self) -> Dict[str, str]:

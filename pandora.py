@@ -41,31 +41,23 @@ class Client:
         self._csrf_token = ''
 
     async def _get_csrf_token(self) -> str:
-        uri = 'https://www.pandora.com'
-        message = soupy.Message.new_for_uri(soupy.Method.HEAD, uri)
-        response = await self._session.send_message(message)
-        self._session.save_cookies_from_response(response, uri)
+        await self._session.head('https://www.pandora.com')
         return self._session.cookies['csrftoken']
 
     async def _send_message(self, method: str, body: dict) -> dict:
         uri = 'https://www.pandora.com/api/' + method
-        message = soupy.Message.new_for_uri(soupy.Method.POST, uri)
-        message.headers = {'X-CsrfToken': self._csrf_token,
-                           'X-AuthToken': self._auth_token}
-        message.json_body = body
-
-        response = await self._session.send_message(message)
+        headers = {'X-CsrfToken': self._csrf_token, 'X-AuthToken': self._auth_token}
+        response = await self._session.post(uri, json_body=body, headers=headers)
         return response.json_body
 
-    async def login(self, email: str, password: str) -> dict:
+    async def login(self, email: str, password: str) -> None:
+        """Logs into account, raises on failure"""
         self._csrf_token = await self._get_csrf_token()
-
         response = await self._send_message('v1/auth/login', {
             'username': email,
             'password': password,
         })
         self._auth_token = response['authToken']
-        return response
 
     async def get_stations(self, amount: int=250) -> List[Station]:
         response = await self._send_message('v1/station/getStations', {

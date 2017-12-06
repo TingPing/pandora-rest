@@ -13,9 +13,9 @@ async def login():
     await ss.unlock_keyring()
     email = 'tngpng@gmail.com'
     password = await ss.get_account_password(email)
-    print(password)
-    response = await client.login(email, password)
-    print(response)
+    if not password:
+        print('Failed to get password')
+    await client.login(email, password)
     stations = await client.get_stations()
     print(stations)
     playlist = await client.get_playlist_fragment(stations[0])
