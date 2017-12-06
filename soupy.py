@@ -86,14 +86,24 @@ class Session:
         self._session.add_feature(self._cookies)
 
     async def head(self, uri: str) -> Message:
-        """Sends HTTP HEAD request. Cookies in response are saved to session"""
+        """
+        Sends HTTP HEAD request. Cookies in response are saved to session
+
+        :param uri: URI to send request to.
+        """
         message = Message.new_for_uri('HEAD', uri)
         response = await self._send_message(message)
         self._save_cookies_from_response(response, uri)
         return response
 
     async def post(self, uri: str, json_body: dict=None, headers: dict=None) -> Message:
-        """Sends HTTP POST request."""
+        """
+        Sends HTTP POST request.
+
+        :param uri: URI to send request to.
+        :param json_body: Body to send, converted to JSON encoded in UTF-8.
+        :param headers: Headers to send.
+        """
         message = Message.new_for_uri('POST', uri)
         if headers is not None:
             message.headers = headers
@@ -122,4 +132,5 @@ class Session:
 
     @property
     def cookies(self) -> Dict[str, str]:
+        """Cookies saved in the session"""
         return {c.get_name(): c.get_value() for c in self._cookies.all_cookies()}

@@ -8,6 +8,13 @@ Pandora
   :members:
   :undoc-members:
 
+Soup
+----
+
+.. automodule:: soupy
+  :members:
+  :undoc-members:
+
 Indices and tables
 ==================
 

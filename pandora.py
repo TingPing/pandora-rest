@@ -4,6 +4,7 @@ from typing import List
 
 
 class AudioFormat(enum.Enum):
+    """Supported formats to request"""
     MP3 = 'mp3'
     AACPLUS = 'aacplus'
 
@@ -51,7 +52,13 @@ class Client:
         return response.json_body
 
     async def login(self, email: str, password: str) -> None:
-        """Logs into account, raises on failure"""
+        """
+        Obtains a users auth-token and stores it in the session.
+        Required before any other calls.
+
+        :param email: Users email
+        :param password: Users password
+        """
         self._csrf_token = await self._get_csrf_token()
         response = await self._send_message('v1/auth/login', {
             'username': email,
@@ -60,13 +67,25 @@ class Client:
         self._auth_token = response['authToken']
 
     async def get_stations(self, amount: int=250) -> List[Station]:
+        """
+        Obtains users stations.
+
+        :param amount: Max number to retreive.
+        """
         response = await self._send_message('v1/station/getStations', {
             'pageSize': amount,
         })
         return [Station(s) for s in response['stations']]
 
-    async def get_playlist_fragment(self, station: Station, is_start=True,
+    async def get_playlist_fragment(self, station: Station, is_start: bool=True,
                                     audio_format: AudioFormat=AudioFormat.MP3) -> List[Track]:
+        """
+        Gets a playlist (list of tracks) for a station.
+
+        :param station: Station to get tracks for.
+        :param is_start: If this is the first playlist.
+        :param audio_format: Format for urls in tracks
+        """
         response = await self._send_message('v1/playlist/getFragment', {
             'stationId': station.station_id,
             'isStationStart': is_start,
