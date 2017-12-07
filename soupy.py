@@ -17,13 +17,16 @@ from typing import Awaitable, Dict
 
 class SoupException(Exception):
     def __init__(self, message: Soup.Message) -> None:
-        # self.status_code = message.props.status_code
-        # self.status = Soup.Status(self.status_code).value_name
-        data = message.props.response_body_data.get_data().decode('utf-8')
-        data = json.loads(data)
-        self.message = data['message']
-        self.error_code = data['errorCode']
-        self.error_message = data['errorString']
+        data = message.props.response_body_data.get_data()
+        if data:
+            data = json.loads(data.decode('utf-8'))
+            self.message = data['message']
+            self.error_code = data['errorCode']
+            self.error_message = data['errorString']
+        else:
+            self.message = 'HTTP Error'
+            self.error_code = message.props.status_code
+            self.error_message = Soup.Status(self.error_code).value_name
 
     def __str__(self) -> str:
         return '{} ({}): {}'.format(self.error_message, self.error_code, self.message)
