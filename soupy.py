@@ -56,8 +56,7 @@ class Message:
 
     @property
     def json_body(self) -> dict:
-        data = self._message.props.request_body_data if self._request else self._message.props.response_body_data
-        data = data.get_data()
+        data = self.body
         return json.loads(data.decode('utf-8')) if data else ''
 
     @json_body.setter
@@ -70,9 +69,11 @@ class Message:
     @property
     def body(self) -> bytes:
         """Returns raw un-encoded bytes from response"""
-        data = self._message.props.request_body_data if self._request else self._message.props.response_body_data
+        if self._request is True:
+            data = self._message.props.request_body_data
+        else:
+            data = self._message.props.response_body_data
         return data.get_data()
-
 
     def __str__(self):
         jb = self.json_body
