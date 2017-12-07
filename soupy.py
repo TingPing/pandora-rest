@@ -166,7 +166,7 @@ class Session:
             # Return to default state
             self._session.props.proxy_resolver = Gio.ProxyResolver.get_default()
         else:
-            if not proxy.startswith(('socks://', 'socks4://', 'socsk5://',
+            if not proxy.startswith(('socks://', 'socks4://', 'socks5://',
                                      'http://', 'https://')):
                 raise SoupException('Invalid proxy URI', -1, '')
             self._session.props.proxy_uri = Soup.URI.new(proxy)
