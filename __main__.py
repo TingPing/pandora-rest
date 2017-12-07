@@ -2,6 +2,7 @@ import asyncio
 import gbulb
 from pandora import Client
 from secrety import SecretService
+import soupy
 
 gbulb.install()
 loop = asyncio.get_event_loop()
@@ -20,6 +21,10 @@ async def login():
     print(stations)
     playlist = await client.get_playlist_fragment(stations[0])
     print(playlist)
+    with open('output.mp3', 'wb') as f:
+        session = soupy.Session()
+        response = await session.get(playlist[0].audio_url)
+        f.write(response.body)
 
 asyncio.ensure_future(login()).add_done_callback(lambda x: loop.stop())
 

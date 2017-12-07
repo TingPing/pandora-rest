@@ -67,6 +67,13 @@ class Message:
                                   Soup.MemoryUse.COPY,
                                   json.dumps(json_body).encode('utf-8'))
 
+    @property
+    def body(self) -> bytes:
+        """Returns raw un-encoded bytes from response"""
+        data = self._message.props.request_body_data if self._request else self._message.props.response_body_data
+        return data.get_data()
+
+
     def __str__(self):
         jb = self.json_body
         body = '\n' + json.dumps(jb, indent=3) if jb else ''
@@ -109,6 +116,14 @@ class Session:
             message.headers = headers
         if json_body is not None:
             message.json_body = json_body
+        return await self._send_message(message)
+
+    async def get(self, uri: str) -> Message:
+        """Sends an HTTP GET request.
+
+        :param uri: URI to send request to.
+        """
+        message = Message.new_for_uri('GET', uri)
         return await self._send_message(message)
 
     def _send_message(self, message: Message) -> Awaitable[Message]:
