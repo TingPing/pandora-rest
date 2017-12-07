@@ -16,17 +16,24 @@ from typing import Awaitable, Dict
 
 
 class SoupException(Exception):
-    def __init__(self, message: Soup.Message) -> None:
-        data = message.props.response_body_data.get_data()
+    def __init__(self, message, error_code, error_message) -> None:
+        self.message = message
+        self.error_code = error_code
+        self.error_message = error_message
+
+    @classmethod
+    def new_from_message(cls, soup_message: Soup.Message):
+        data = soup_message.props.response_body_data.get_data()
         if data:
             data = json.loads(data.decode('utf-8'))
-            self.message = data['message']
-            self.error_code = data['errorCode']
-            self.error_message = data['errorString']
+            message = data['message']
+            error_code = data['errorCode']
+            error_message = data['errorString']
         else:
-            self.message = 'HTTP Error'
-            self.error_code = message.props.status_code
-            self.error_message = Soup.Status(self.error_code).value_name
+            message = 'HTTP Error'
+            error_code = soup_message.props.status_code
+            error_message = Soup.Status(error_code).value_name
+        return cls(message, error_code, error_message)
 
     def __str__(self) -> str:
         return '{} ({}): {}'.format(self.error_message, self.error_code, self.message)
@@ -135,7 +142,7 @@ class Session:
 
         def on_response(session, response_message):
             if response_message.status_code != 200:
-                future.set_exception(SoupException(response_message))
+                future.set_exception(SoupException.new_from_message(response_message))
             else:
                 future.set_result(Message(response_message))
 
@@ -159,6 +166,9 @@ class Session:
             # Return to default state
             self._session.props.proxy_resolver = Gio.ProxyResolver.get_default()
         else:
+            if not proxy.startswith(('socks://', 'socks4://', 'socsk5://',
+                                     'http://', 'https://')):
+                raise SoupException('Invalid proxy URI', -1, '')
             self._session.props.proxy_uri = Soup.URI.new(proxy)
 
     def _save_cookies_from_response(self, response: Message, origin: str) -> None:
