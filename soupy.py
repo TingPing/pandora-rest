@@ -10,7 +10,7 @@ import asyncio
 import enum
 import gi
 gi.require_version('Soup', '2.4')
-from gi.repository import Soup
+from gi.repository import Gio, Soup
 import json
 from typing import Awaitable, Dict
 
@@ -138,6 +138,25 @@ class Session:
 
         self._session.queue_message(message._message, on_response)
         return future
+
+    @property
+    def proxy(self) -> str:
+        """Proxy to be used by the session.
+
+        SOCKS (4/5) and HTTP are currently supported.
+
+        An empty string means disabled (respect system default).
+        """
+        uri = self._session.props.proxy_uri
+        return uri.to_string(False) if uri else ''
+
+    @proxy.setter
+    def proxy(self, proxy: str) -> None:
+        if not proxy:
+            # Return to default state
+            self._session.props.proxy_resolver = Gio.ProxyResolver.get_default()
+        else:
+            self._session.props.proxy_uri = Soup.URI.new(proxy)
 
     def _save_cookies_from_response(self, response: Message, origin: str) -> None:
         cookies = response.headers.get('Set-Cookie', '')
