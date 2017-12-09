@@ -9,30 +9,65 @@ class AudioFormat(enum.Enum):
     AACPLUS = 'aacplus'
 
 
+class Art:
+    def __init__(self, art: dict) -> None:
+        self.x_small = art.get('90')
+        self.small = art.get('130')
+        self.medium = art.get('500')
+        self.large = art.get('640')
+        self.x_large = art.get('1080')
+
+
 class Track:
     def __init__(self, data: dict) -> None:
+        # Must have
         self.title = data['songTitle']
+        self.album_title = data['albumTitle']
+        self.artist_name = data['artistName']
         self.music_id = data['musicId']
+        self.artist_music_id = data['artistMusicId']
+        self.pandora_id = data['pandoraId']
         self.token = data['trackToken']
-        self.length = data['trackLength']
-        self.gain = float(data['fileGain'])
+        self.station_id = data['stationId']
         self.audio_url = data['audioURL']
-        self.audio_encoding = data['audioEncoding']
-        self.art = {i['size']: i['url'] for i in data['albumArt']}
+        # Nice to have
+        self.rating = int(data.get('rating', 0))
+        self.length = int(data.get('trackLength', 0))
+        self.gain = float(data.get('fileGain', 0.0))
+        self.audio_encoding = data.get('audioEncoding', '')
+        self.art = Art({i['size']: i['url'] for i in data.get('albumArt', [])})
+        self.artist_art = Art({i['size']: i['url'] for i in data.get('artistArt', [])})
+        self.genre = data.get('genre', [])
+        self.user_seed = data.get('userSeed')
+        self.is_seed = data.get('isSeed', False)
+        self.is_bookmarked = data.get('isBookmarked', False)
 
     def __repr__(self):
-        return "<Track '{}'>".format(self.title)
+        return "<Track '{}: {}'>".format(self.artist_name, self.title)
+
+
+class StationSeed:
+    def __init__(self, seed: dict) -> None:
+        self.music_id = seed.get('musicId')
+        self.pandora_id = seed.get('pandoraId')
 
 
 class Station:
     def __init__(self, data: dict) -> None:
+        # Must have
         self.name = data['name']
         self.station_id = data['stationId']
-        self.art = {i['size']: i['url'] for i in data['art']}
-        self.is_thumbprint = data['isThumbprint']
+        self.pandora_id = data['pandoraId']
+        # Nice to have
+        self.initial_seed = StationSeed(data.get('initialSeed', {}))
+        self.allow_add_seed = data.get('allowAddSeed', False)
+        self.art = Art({i['size']: i['url'] for i in data.get('art', [])})
+        self.is_thumbprint = data.get('isThumbprint', False)
+        self.is_shuffle = data.get('isShuffle', False)
+        self.genre = data.get('genre', [])
 
     def __repr__(self):
-        return "<Station '{}'>".format(self.name)
+        return "<Station '{}: {}'>".format(self.name, self.station_id)
 
 
 class Client:
