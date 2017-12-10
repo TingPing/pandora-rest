@@ -1,6 +1,7 @@
 import enum
 import soupy
 from typing import List
+from bisect import bisect_left
 
 
 class AudioFormat(enum.Enum):
@@ -11,12 +12,43 @@ class AudioFormat(enum.Enum):
 
 class Art:
     def __init__(self, art: dict) -> None:
-        self.x_small = art.get('90')
-        self.small = art.get('130')
-        self.medium = art.get('500')
-        self.large = art.get('640')
-        self.x_large = art.get('1080')
+        self._art = art
+        self.x_small = self._art.get('90')
+        self.small = self._art.get('130')
+        self.medium = self._art.get('500')
+        self.large = self._art.get('640')
+        self.x_large = self._art.get('1080')
+        self._sizes = []
+        for k in self._art.keys():
+            try:
+                self._sizes.append(int(k))
+            except ValueError:
+                continue
+        self._sizes.sort()
 
+    def get_best_url_for_size(self, size: int) -> str:
+        """
+        Obtains the Url of the art that is closest in size
+        to the desired size or an empty string if there is no art.
+        If two sizes are equally close to the desired size,
+        return the larger or the two size's Url.
+
+        :param size: desired size in px
+        :returns: art Url or empty string
+        """
+        if not self._art:
+            return ''
+        elif not self._sizes:
+            return list(self._art.values())[0]
+        elif size in self._sizes:
+            closest = size
+        else:
+            pos = bisect_left(self._sizes, size)
+            if pos == len(self._sizes):
+                closest = self._sizes[-1]
+            else:
+                closest = self._sizes[pos]
+        return self._art.get(str(closest), '')
 
 class Track:
     def __init__(self, data: dict) -> None:
