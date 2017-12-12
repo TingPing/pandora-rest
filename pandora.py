@@ -7,6 +7,7 @@ from bisect import bisect_left
 class AudioFormat(enum.Enum):
     """Supported formats to request"""
     MP3 = 'mp3'
+    MP3_HIFI = 'mp3-hifi'
     AACPLUS = 'aacplus'
 
 
