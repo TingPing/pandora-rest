@@ -106,6 +106,7 @@ class Station:
 class Client:
     def __init__(self):
         self._session = soupy.Session()
+        self._hifi_available = False
         self._auth_token = ''
         self._csrf_token = ''
 
@@ -132,6 +133,9 @@ class Client:
             'username': email,
             'password': password,
         })
+
+        flags = response.get('config', {}).get('flags', [])
+        self._hifi_available = 'highQualityStreamingAvailable' in flags
         self._auth_token = response['authToken']
 
     async def get_stations(self, amount: int=250) -> List[Station]:
