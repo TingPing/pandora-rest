@@ -2,3 +2,5 @@
 .mypy_cache/
 __pycache__/
 /docs/_build/
+output.mp3
+gbulb/
