@@ -31,7 +31,7 @@ class Art:
         Obtains the Url of the art that is closest in size
         to the desired size or an empty string if there is no art.
         If two sizes are equally close to the desired size,
-        return the larger or the two size's Url.
+        return the larger of the two size's Url.
 
         :param size: desired size in px
         :returns: art Url or empty string
