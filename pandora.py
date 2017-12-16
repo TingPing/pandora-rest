@@ -165,3 +165,13 @@ class Client:
             'audioFormat': audio_format.value,  # TODO: aacplus and maybe more formats
         })
         return [Track(t) for t in response['tracks']]
+
+    async def tired_track(self, track: Track) -> None:
+        """
+        Set a track Tired.
+
+        :param track: The track to be set Tired.
+        """
+        await self._send_message('v1/listener/addTiredSong', {
+            'trackToken': track.token,
+        })
