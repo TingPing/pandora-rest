@@ -225,3 +225,17 @@ class Client:
                 'trackToken': track.token,
                 'isPositive': is_positive,
             })
+
+    async def get_replay_track(self, track: Track, last_played_track_token: str) -> Track:
+        """
+        Gets a fresh track for replay.
+
+        :param track: The track to be replayed.
+        :param last_played_track_token: The trackToken of the last played track.
+        """
+        response = await self._send_message('v1/ondemand/getReplayTrack', {
+            'stationId': track.station_id,
+            'trackToken': track.token,
+            'lastPlayedTrackToken': last_played_track_token,
+        })
+        return Track(response['replayTrack'])
