@@ -10,6 +10,10 @@ class AudioFormat(enum.Enum):
     MP3_HIFI = 'mp3-hifi'
     AACPLUS = 'aacplus'
 
+class NewStationType(enum.Enum):
+    SONG = 0
+    ARTIST = 1
+
 
 class Art:
     def __init__(self, art: dict) -> None:
@@ -148,6 +152,24 @@ class Client:
             'pageSize': amount,
         })
         return [Station(s) for s in response['stations']]
+
+    async def create_new_station_based_on_track(self, track: Track,
+                                                new_station_type: NewStationType) -> Station:
+        """
+        Creates a new station based on a track.
+
+        :param track: the track the new station is based on.
+        :param new_station_type: the NewStationType.
+        """
+        if new_station_type is NewStationType.SONG:
+            music_id = track.music_id
+        else:
+            music_id = track.artist_music_id
+        station_code = 'mc' + music_id
+        response = await self._send_message('v1/station/createStation', {
+            'stationCode': station_code,
+        })
+        return Station(response)
 
     async def get_playlist_fragment(self, station: Station, is_start: bool=True,
                                     audio_format: AudioFormat=AudioFormat.MP3) -> List[Track]:
