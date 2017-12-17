@@ -272,6 +272,30 @@ class Client:
             'musicId': music_id,
         })
 
+    async def track_started(self, track: Track) -> None:
+        """
+        Signal that a track has started.
+
+        :param track: The track to be started.
+        """
+        await self._send_message('v1/station/trackStarted', {
+            'trackToken': track.token,
+        })
+
+    async def playback_paused(self) -> None:
+        """
+        Signal that playback has paused.
+        """
+        await self._send_message('v1/station/playbackPaused', {})
+
+    async def playback_resumed(self) -> None:
+        """
+        Signal that playback has resumed.
+        """
+        await self._send_message('v1/station/playbackResumed', {
+            'forceActive': False,
+        })
+
     async def rate_track(self, track: Track, track_rating: TrackRating) -> None:
         """
         Rate a track.
