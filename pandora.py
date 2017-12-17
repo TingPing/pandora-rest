@@ -15,6 +15,13 @@ class NewStationType(enum.Enum):
     ARTIST = 1
 
 
+class TrackRating(enum.IntEnum):
+    """Pandora Track Ratings"""
+    NONE = 0
+    LOVED = 1
+    BANNED = 2
+
+
 class Art:
     def __init__(self, art: dict) -> None:
         self._art = art
@@ -68,7 +75,7 @@ class Track:
         self.station_id = data['stationId']
         self.audio_url = data['audioURL']
         # Nice to have
-        self.rating = int(data.get('rating', 0))
+        self.rating = TrackRating(int(data.get('rating', 0)))
         self.length = int(data.get('trackLength', 0))
         self.gain = float(data.get('fileGain', 0.0))
         self.audio_encoding = data.get('audioEncoding', '')
@@ -197,3 +204,24 @@ class Client:
         await self._send_message('v1/listener/addTiredSong', {
             'trackToken': track.token,
         })
+
+    async def rate_track(self, track: Track, track_rating: TrackRating) -> None:
+        """
+        Rate a track.
+
+        :param track: The track to be rated.
+        :param track_rating: The new TrackRating.
+        """
+        if track_rating is TrackRating.NONE:
+            if track.rating is not TrackRating.NONE:
+                await self._send_message('v1/station/deleteFeedback', {
+                    'trackToken': track.token,
+                    'isPositive': True,
+                })
+
+        elif track_rating is not track.rating:
+            is_positive = track_rating is TrackRating.LOVED
+            await self._send_message('v1/station/addFeedback', {
+                'trackToken': track.token,
+                'isPositive': is_positive,
+            })
