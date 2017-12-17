@@ -127,7 +127,8 @@ class Station:
         return "<Station '{}: {}'>".format(self.name, self.station_id)
 
 class SearchResult:
-    def __init__(self, result: dict) -> None:
+    def __init__(self, result: dict, query: str) -> None:
+        self.query = query
         self.result_type = ResultType(result['type'])
         if self.result_type is ResultType.ARTIST:
             self.artist_name = result['name']
@@ -187,6 +188,19 @@ class Client:
             'pageSize': amount,
         })
         return [Station(s) for s in response['stations']]
+
+    async def create_new_station_based_on_search_result(self, result: SearchResult) -> Station:
+        """
+        Creates a new station based on a SearchResult.
+
+        :param result: the SearchResult the new station is based on.
+        """
+        station_code = 'mc' + result.music_id
+        response = await self._send_message('v1/station/createStation', {
+            'stationCode': station_code,
+            'searchQuery': result.query,
+        })
+        return Station(response)
 
     async def create_new_station_based_on_track(self, track: Track,
                                                 new_station_type: NewStationType) -> Station:
@@ -283,4 +297,4 @@ class Client:
             'type': search_type.value,
             'maxItemsPerCategory': max_items_per_category,
         })
-        return [SearchResult(r) for r in response['items']]
+        return [SearchResult(r, query) for r in response['items']]
