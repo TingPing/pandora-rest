@@ -10,6 +10,7 @@ class AudioFormat(enum.Enum):
     MP3_HIFI = 'mp3-hifi'
     AACPLUS = 'aacplus'
 
+
 class NewStationType(enum.Enum):
     SONG = 0
     ARTIST = 1
@@ -20,6 +21,18 @@ class TrackRating(enum.IntEnum):
     NONE = 0
     LOVED = 1
     BANNED = 2
+
+
+class SearchType(enum.Enum):
+    """Supported search types"""
+    ALL = 'all'
+    TRACK = 'track'
+    ARTIST = 'artist'
+
+class ResultType(enum.Enum):
+    """Search result types"""
+    TRACK = 'track'
+    ARTIST = 'artist'
 
 
 class Art:
@@ -112,6 +125,21 @@ class Station:
 
     def __repr__(self):
         return "<Station '{}: {}'>".format(self.name, self.station_id)
+
+class SearchResult:
+    def __init__(self, result: dict) -> None:
+        self.result_type = ResultType(result['type'])
+        if self.result_type is ResultType.ARTIST:
+            self.artist_name = result['name']
+            self.track_name = ''
+        elif self.result_type is ResultType.TRACK:
+            self.artist_name = result['artistName']
+            self.track_name = result['name']
+        self.music_id = result['musicId']
+        self.art = Art({i['size']: i['url'] for i in result.get('art', [])})
+
+    def __repr__(self):
+        return "<SearchResult '{}: {}'>".format(self.result_type.name, self.music_id)
 
 
 class Client:
@@ -239,3 +267,20 @@ class Client:
             'lastPlayedTrackToken': last_played_track_token,
         })
         return Track(response['replayTrack'])
+
+    async def search(self, query: str, search_type: SearchType=SearchType.ALL,
+                     max_items_per_category: int=50) -> List[SearchResult]:
+        """
+        Obtains search results.
+
+        :param query: A query string.
+        :param search_type: SearchType.
+        :param max_items_per_category: Max Items Per Category.
+        """
+        # TODO: search genre stations
+        response = await self._send_message('v1/search/fullSearch', {
+            'query': query,
+            'type': search_type.value,
+            'maxItemsPerCategory': max_items_per_category,
+        })
+        return [SearchResult(r) for r in response['items']]

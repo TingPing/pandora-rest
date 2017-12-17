@@ -21,6 +21,8 @@ async def login():
     print(stations)
     playlist = await client.get_playlist_fragment(stations[0])
     print(playlist)
+    search = await client.search('Pantera')
+    print(search)
     with open('output.mp3', 'wb') as f:
         session = soupy.Session()
         response = await session.get(playlist[0].audio_url)
