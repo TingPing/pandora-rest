@@ -19,7 +19,10 @@ async def login():
     await client.login(email, password)
     stations = await client.get_stations()
     print(stations)
-    playlist = await client.get_playlist_fragment(stations[0])
+    station = stations[0]
+    # await client.update_station(station, name='Super Awesome Jams')
+    # await client.update_station(station, description='Nothing but the most Super Awesome Jams')
+    playlist = await client.get_playlist_fragment(station)
     print(playlist)
     search = await client.search('Pantera')
     print(search)

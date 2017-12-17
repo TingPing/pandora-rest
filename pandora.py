@@ -1,6 +1,6 @@
 import enum
 import soupy
-from typing import List
+from typing import List, Union
 from bisect import bisect_left
 
 
@@ -116,6 +116,7 @@ class Station:
         self.is_thumbprint = data.get('isThumbprint', False)
         self.is_shuffle = data.get('isShuffle', False)
         self.genre = data.get('genre', [])
+        self.description = data.get('description', '')
 
     def __repr__(self):
         return "<Station '{}: {}'>".format(self.name, self.station_id)
@@ -224,6 +225,28 @@ class Client:
         await self._send_message('v1/station/removeStation', {
             'stationId': station.station_id,
         })
+
+    async def update_station(self, station: Station, name: Union[str, None]=None,
+                             description: Union[str, None]=None) -> None:
+        """
+        Update a station's name and/or description.
+
+        :param station: The station to be renamed.
+        :param name: The new name of the station or None to not change it.
+        :param description: The new description of the station or None to not change it.
+        """
+        name = self._ellipsize(name, 64)
+        description = self._ellipsize(description, 4000)
+        await self._send_message('v1/station/updateStation', {
+            'stationId': station.station_id,
+            'name': name or station.name,
+            'description': description or station.description,
+        })
+
+    def _ellipsize(self, long_string: Union[str, None], max_size: int) -> Union[str, None]:
+        if long_string and len(long_string) > max_size:
+            long_string = long_string[:max_size - 1] + '…'
+        return long_string
 
     async def get_playlist_fragment(self, station: Station, is_start: bool=True,
                                     audio_format: AudioFormat=AudioFormat.MP3) -> List[Track]:
