@@ -102,6 +102,20 @@ class StationSeed:
         self.music_id = seed.get('musicId')
         self.pandora_id = seed.get('pandoraId')
 
+class ArtistInfo:
+    def __init__(self, info: dict) -> None:
+        self.bio = info.get('bio', '')
+        self.discography = [Album(a) for a in info.get('discography', [])]
+
+
+class Album:
+    def __init__(self, album: dict) -> None:
+        self.year = album.get('year', 0)
+        self.music_id = album.get('musicId', '')
+        self.pandora_id = album.get('pandoraId', '')
+        self.album_title = album.get('albumTitle', '')
+        self.art = Art({i['size']: i['url'] for i in album.get('art', [])})
+
 
 class Station:
     def __init__(self, data: dict) -> None:
@@ -330,6 +344,17 @@ class Client:
             'lastPlayedTrackToken': last_played_track_token,
         })
         return Track(response['replayTrack'])
+
+    async def get_artist_info(self, artist_music_id: str) -> ArtistInfo:
+        """
+        Get artist info.
+
+        :artist_music_id: artistMusicId.
+        """
+        response = await self._send_message('v1/music/artist', {
+            'token': artist_music_id,
+        })
+        return ArtistInfo(response)
 
     async def search(self, query: str, search_type: SearchType=SearchType.ALL,
                      max_items_per_category: int=50) -> List[SearchResult]:
