@@ -233,6 +233,26 @@ class Client:
             'trackToken': track.token,
         })
 
+    async def add_bookmark(self, music_id: str) -> None:
+        """
+        Bookmark a track or artist.
+
+        :music_id: musicId or artistMusicId.
+        """
+        await self._send_message('v1/bookmark/add', {
+            'musicId': music_id,
+        })
+
+    async def delete_bookmark(self, music_id: str) -> None:
+        """
+        Delete a previously bookmarked track or artist.
+
+        :music_id: musicId or artistMusicId.
+        """
+        await self._send_message('/v1/bookmark/delete', {
+            'musicId': music_id,
+        })
+
     async def rate_track(self, track: Track, track_rating: TrackRating) -> None:
         """
         Rate a track.
