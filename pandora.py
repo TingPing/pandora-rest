@@ -29,6 +29,7 @@ class SearchType(enum.Enum):
     TRACK = 'track'
     ARTIST = 'artist'
 
+
 class ResultType(enum.Enum):
     """Search result types"""
     TRACK = 'track'
@@ -43,7 +44,7 @@ class Art:
         self.medium = self._art.get('500')
         self.large = self._art.get('640')
         self.x_large = self._art.get('1080')
-        self._sizes = []
+        self._sizes = []  # type: List[int]
         for k in self._art.keys():
             try:
                 self._sizes.append(int(k))
@@ -74,6 +75,7 @@ class Art:
             else:
                 closest = self._sizes[pos]
         return self._art.get(str(closest), '')
+
 
 class Track:
     def __init__(self, data: dict) -> None:
@@ -125,6 +127,7 @@ class Station:
 
     def __repr__(self):
         return "<Station '{}: {}'>".format(self.name, self.station_id)
+
 
 class SearchResult:
     def __init__(self, result: dict, query: str) -> None:
