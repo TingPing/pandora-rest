@@ -44,13 +44,7 @@ class Art:
         self.medium = self._art.get('500')
         self.large = self._art.get('640')
         self.x_large = self._art.get('1080')
-        self._sizes = []  # type: List[int]
-        for k in self._art.keys():
-            try:
-                self._sizes.append(int(k))
-            except ValueError:
-                continue
-        self._sizes.sort()
+        self._sizes = sorted(self._art.keys())
 
     def get_best_url_for_size(self, size: int) -> str:
         """
@@ -64,8 +58,6 @@ class Art:
         """
         if not self._art:
             return ''
-        elif not self._sizes:
-            return list(self._art.values())[0]
         elif size in self._sizes:
             closest = size
         else:
@@ -74,7 +66,7 @@ class Art:
                 closest = self._sizes[-1]
             else:
                 closest = self._sizes[pos]
-        return self._art.get(str(closest), '')
+        return self._art[closest]
 
 
 class Track:
