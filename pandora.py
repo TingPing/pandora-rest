@@ -206,6 +206,16 @@ class Client:
         })
         return Station(response)
 
+    async def delete_station(self, station: Station) -> None:
+        """
+        Deletes a station.
+
+        :param station: the station to be deleted.
+        """
+        await self._send_message('v1/station/removeStation', {
+            'stationId': station.station_id,
+        })
+
     async def get_playlist_fragment(self, station: Station, is_start: bool=True,
                                     audio_format: AudioFormat=AudioFormat.MP3) -> List[Track]:
         """
