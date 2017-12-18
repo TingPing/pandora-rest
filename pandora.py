@@ -317,6 +317,7 @@ class Client:
             'musicId': music_id,
         })
 
+<<<<<<< HEAD
     async def track_started(self, track: Track) -> None:
         """
         Signal that a track has started.
@@ -339,6 +340,27 @@ class Client:
         """
         await self._send_message('v1/station/playbackResumed', {
             'forceActive': False,
+=======
+    async def get_explicit_content_filter(self) -> bool:
+        """
+        Get if the explicit content filter is enabled.
+        """
+        response = await self._send_message('v1/listener/updateSettings', {})
+        return response['explicitContentFilterEnabled']
+
+    async def set_explicit_content_filter(self, enable: bool, email: str, password: str) -> None:
+        """
+        Enable or disable the explicit content filter.
+
+        :enable: if the filter should be enabled.
+        :param email: Users email
+        :param password: Users password
+        """
+        await self._send_message('v1/listener/updateAccount', {
+            'currentUsername': email,
+            'currentPassword': password,
+            'enableExplicitContentFilter': enable,
+>>>>>>> Add explicit content filter support
         })
 
     async def rate_track(self, track: Track, track_rating: TrackRating) -> None:

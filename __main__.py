@@ -17,6 +17,9 @@ async def login():
     if not password:
         print('Failed to get password')
     await client.login(email, password)
+    # filter_enabled = await client.get_explicit_content_filter()
+    # print(filter_enabled)
+    # await client.set_explicit_content_filter(not filter_enabled, email, password)  
     stations = await client.get_stations()
     print(stations)
     station = stations[0]
