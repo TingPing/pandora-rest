@@ -1,6 +1,6 @@
 import enum
 import soupy
-from typing import List, Union
+from typing import List, Optional
 from bisect import bisect_left
 
 
@@ -242,8 +242,8 @@ class Client:
         })
 
     async def update_station(self, station: Station,
-                             name: Union[str, None] = None,
-                             description: Union[str, None] = None) -> None:
+                             name: Optional[str] = None,
+                             description: Optional[str] = None) -> None:
         """
         Update a station's name and/or description.
 
