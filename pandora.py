@@ -253,20 +253,23 @@ class Client:
                              description: Optional[str] = None) -> None:
         """
         Update a station's name and/or description.
-
-        :param station: The station to be renamed.
-        :param name: The new (non-empty) name of the station or ``None`` to not change it.
-        :param description: The new description of the station or ``None`` to not change it.
+        :param station: The station to be updated.
+        :param name: The new (non-empty) name of the station or ``None`` to not change it. \
+                     name will be ellipsized if it exceeds 64 characters.
+        :param description: The new description of the station or ``None`` to not change it. \
+                     description will be ellipsized if it exceeds 4000 characters.
         """
-        if name is None and description is None:
+        if not name and description is None:
             return  # Nothing to be done
 
-        body = {'stationId': station.station_id}
-        if name:
-            body['name'] = self._ellipsize(name, 64)
-        if description is not None:
-            body['description'] = self._ellipsize(description, 4000)
-        await self._send_message('v1/station/updateStation', body)
+        name = self._ellipsize(name, 64)
+        description = self._ellipsize(description, 4000)
+
+        await self._send_message('v1/station/updateStation', {
+            'stationId': station.station_id,
+            'name': name or station.name,
+            'description': description or station.description, 
+        })
 
     @staticmethod
     def _ellipsize(string: str, max_size: int) -> str:
