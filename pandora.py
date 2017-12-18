@@ -81,6 +81,7 @@ class Track:
         self.token = data['trackToken']
         self.station_id = data['stationId']
         self.audio_url = data['audioURL']
+        self.album_seo_token = data['albumSeoToken']
         # Nice to have
         self.rating = TrackRating(int(data.get('rating', 0)))
         self.length = int(data.get('trackLength', 0))
@@ -106,16 +107,35 @@ class StationSeed:
 class ArtistInfo:
     def __init__(self, info: dict) -> None:
         self.bio = info.get('bio', '')
-        self.discography = [Album(a) for a in info.get('discography', [])]
+        self.discography = [ArtistInfoAlbum(a) for a in info.get('discography', [])]
 
 
-class Album:
+class ArtistInfoAlbum:
     def __init__(self, album: dict) -> None:
         self.year = album.get('year', 0)
         self.music_id = album.get('musicId', '')
         self.pandora_id = album.get('pandoraId', '')
         self.album_title = album.get('albumTitle', '')
+        self.album_seo_token = album.get('SeoToken', '')
         self.art = Art({i['size']: i['url'] for i in album.get('art', [])})
+
+
+class AlbumInfo:
+    def __init__(self, info: dict) -> None:
+        self.review = info.get('review', '')
+        self.is_bookmarked = info.get('isBookmarked', False)
+        self.tracks = [AlbumInfoTrack(t) for t in info.get('tracks', [])]
+
+
+class AlbumInfoTrack:
+    def __init__(self, track: dict) -> None:
+        self.title = track.get('songTitle', '')
+        self.album_title = track.get('albumTitle', '')
+        self.artist_name = track.get('artistName', '')
+        self.music_id = track.get('musicId', '')
+        self.pandora_id = track.get('pandoraId', '')
+        self.length = int(track.get('trackLength', 0))
+        self.art = Art({i['size']: i['url'] for i in track.get('albumArt', [])})
 
 
 class Station:
@@ -144,10 +164,13 @@ class SearchResult:
         if self.result_type is ResultType.ARTIST:
             self.artist_name = result['name']
             self.track_name = ''
+            self.music_id = ''
+            self.artist_music_id = result['musicId']
         elif self.result_type is ResultType.TRACK:
             self.artist_name = result['artistName']
             self.track_name = result['name']
-        self.music_id = result['musicId']
+            self.music_id = result['musicId']
+            self.artist_music_id = ''
         self.art = Art({i['size']: i['url'] for i in result.get('art', [])})
 
     def __repr__(self):
@@ -408,6 +431,17 @@ class Client:
             'token': artist_music_id,
         })
         return ArtistInfo(response)
+
+    async def get_album_info(self, album_seo_token: str) -> AlbumInfo:
+        """
+        Get album info.
+
+        :param album_seo_token: albumSeoToken.
+        """
+        response = await self._send_message('v1/music/album', {
+            'token': album_seo_token,
+        })
+        return AlbumInfo(response)
 
     async def search(self, query: str, search_type: SearchType=SearchType.ALL,
                      max_items_per_category: int=50) -> List[SearchResult]:
