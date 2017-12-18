@@ -155,6 +155,13 @@ class SearchResult:
 
 
 class Client:
+    """
+    Wrapper for the `Pandora REST API <https://6xq.net/pandora-apidoc/rest/>`_.
+
+    Note that :meth:`login()` must be called before any other method.
+
+    All methods raise :class:`SoupException` on failure.
+    """
     def __init__(self):
         self._session = soupy.Session()
         self._hifi_available = False
