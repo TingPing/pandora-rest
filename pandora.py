@@ -255,14 +255,14 @@ class Client:
         Update a station's name and/or description.
 
         :param station: The station to be renamed.
-        :param name: The new name of the station or ``None`` to not change it.
+        :param name: The new (non-empty) name of the station or ``None`` to not change it.
         :param description: The new description of the station or ``None`` to not change it.
         """
         if name is None and description is None:
             return  # Nothing to be done
 
         body = {'stationId': station.station_id}
-        if name is not None:
+        if name:
             body['name'] = self._ellipsize(name, 64)
         if description is not None:
             body['description'] = self._ellipsize(description, 4000)
