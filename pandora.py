@@ -36,6 +36,12 @@ class ResultType(enum.Enum):
     ARTIST = 'artist'
 
 
+class RecommendationType(enum.Enum):
+    """Station recommendation types"""
+    GENRE = 'genreStations'
+    ARTIST = 'artists'
+
+
 class Art:
     def __init__(self, art: dict) -> None:
         self._art = art
@@ -175,6 +181,43 @@ class SearchResult:
 
     def __repr__(self):
         return "<SearchResult '{}: {}'>".format(self.result_type.name, self.music_id)
+
+
+class StationRecommendation:
+    def __init__(self, rec: dict, rec_type: RecommendationType) -> None:
+        self.recommendation_type = rec_type
+        if self.recommendation_type is RecommendationType.ARTIST:
+            self.artist_name = rec['name']
+            self.artist_music_id = rec['musicId']
+            self.station_name = ''
+            self.genre_music_id = ''
+            self.description = ''
+            self.sample_tracks = []
+            self.art = Art({i['size']: i['url'] for i in rec.get('art', [])})
+        elif self.recommendation_type is RecommendationType.GENRE:
+            self.artist_name = ''
+            self.artist_music_id = ''
+            self.station_name = rec['name']
+            self.genre_music_id = rec['musicId']
+            self.description = rec.get('description', '')
+            self.sample_tracks = [RecommendationSampleTrack(t) for t in rec.get('sampleTracks', [])]
+            self.art = Art({i['size']: i['url'] for i in rec.get('headerArt', [])})
+
+    def __repr__(self):
+        music_id = self.artist_music_id or self.genre_music_id
+        return "<StationRecommendation '{}: {}'>".format(self.recommendation_type.name, music_id)
+
+
+class RecommendationSampleTrack:
+    def __init__(self, track: dict) -> None:
+        self.title = track.get('songTitle', '')
+        self.album_title = track.get('albumTitle', '')
+        self.artist_name = track.get('artistName', '')
+        self.music_id = track.get('musicId', '')
+        self.pandora_id = track.get('pandoraId', '')
+        self.length = int(track.get('trackLength', 0))
+        self.album_seo_token = track.get('albumSeoToken', '')
+        self.art = Art({i['size']: i['url'] for i in track.get('albumArt', [])})
 
 
 class Client:
@@ -441,6 +484,13 @@ class Client:
             'token': album_seo_token,
         })
         return AlbumInfo(response)
+
+    async def get_station_recommendations(self) -> List[StationRecommendation]:
+        """
+        Get station recommendations.
+        """
+        response = await self._send_message('v1/search/getStationRecommendations', {})
+        return [StationRecommendation(r, RecommendationType(k)) for k, v in response.items() for r in v]
 
     async def search(self, query: str, search_type: SearchType=SearchType.ALL,
                      max_items_per_category: int=50) -> List[SearchResult]:
