@@ -29,6 +29,15 @@ async def login():
     # await client.update_station(station, description='Nothing but the most Super Awesome Jams')
     playlist = await client.get_playlist_fragment(station)
     print(playlist)
+    # track_with_lyrics = None
+    # for track in playlist:
+        # if track.lyric_id:
+            # track_with_lyrics = track
+            # break
+    # lyric = await client.get_lyrics(track_with_lyrics)
+    # print(track_with_lyrics)
+    # for line in lyric.lines:
+        # print(line)
     # artist_info = await client.get_artist_info(playlist[0].artist_music_id)
     # print(artist_info.bio)
     search = await client.search('Pantera')
