@@ -94,6 +94,8 @@ class Track:
         self.user_seed = data.get('userSeed')
         self.is_seed = data.get('isSeed', False)
         self.is_bookmarked = data.get('isBookmarked', False)
+        self.lyric_id = data.get('lyricSnippet', {}).get('lyricId')
+        self.lyric_checksum = data.get('lyricSnippet', {}).get('checksum')
 
     def __repr__(self):
         return "<Track '{}: {}'>".format(self.artist_name, self.title)
@@ -103,6 +105,12 @@ class StationSeed:
     def __init__(self, seed: dict) -> None:
         self.music_id = seed.get('musicId')
         self.pandora_id = seed.get('pandoraId')
+
+
+class Lyric:
+    def __init__(self, data: dict) -> None:
+        self.lines = data.get('lines', [])
+        self.credits = data.get('credits', [])
 
 
 class ArtistInfo:
@@ -467,6 +475,23 @@ class Client:
             'token': album_seo_token,
         })
         return AlbumInfo(response)
+
+    async def get_lyrics(self, track: Track) -> Lyric:
+        """
+        Get track lyrics.
+
+        :param track: the track to get the lyrics for.
+        """
+        if not track.lyric_id or not track.lyric_checksum:
+            return Lyric({})
+
+        response = await self._send_message('v1/music/fullLyrics', {
+            'trackUid': track.music_id,
+            'lyricId': track.lyric_id,
+            'checksum': track.lyric_checksum,
+            'nonExplicit': False, # TODO Tie this to the explicit content filter setting
+        })
+        return Lyric(response)
 
     async def get_station_recommendations(self) -> List[StationRecommendation]:
         """
