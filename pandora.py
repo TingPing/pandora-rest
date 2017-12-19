@@ -11,11 +11,6 @@ class AudioFormat(enum.Enum):
     AACPLUS = 'aacplus'
 
 
-class NewStationType(enum.Enum):
-    SONG = 0
-    ARTIST = 1
-
-
 class TrackRating(enum.IntEnum):
     """Pandora Track Ratings"""
     NONE = 0
@@ -273,34 +268,22 @@ class Client:
         })
         return [Station(s) for s in response['stations']]
 
-    async def create_new_station_based_on_search_result(self, result: SearchResult) -> Station:
+    async def create_station(self, music_id: str, name: Optional[str] = None,
+                             search_query: Optional[str] = None) -> Station:
         """
-        Creates a new station based on a SearchResult.
+        Creates a new station.
 
-        :param result: the SearchResult the new station is based on.
+        :param music_id: A track_music_id, artist_music_id or genre_music_id.
+        :param name: The name of the new station (Optional, 64 char limit).
+        :param search_query: The search query if music_id was got from a search (Optional).
         """
-        station_code = 'mc' + result.music_id
+        sig = 'mc' if music_id.startswith('S') else 'mi'
+        station_code = sig + music_id
+
         response = await self._send_message('v1/station/createStation', {
             'stationCode': station_code,
-            'searchQuery': result.query,
-        })
-        return Station(response)
-
-    async def create_new_station_based_on_track(self, track: Track,
-                                                new_station_type: NewStationType) -> Station:
-        """
-        Creates a new station based on a track.
-
-        :param track: the track the new station is based on.
-        :param new_station_type: the NewStationType.
-        """
-        if new_station_type is NewStationType.SONG:
-            music_id = track.music_id
-        else:
-            music_id = track.artist_music_id
-        station_code = 'mc' + music_id
-        response = await self._send_message('v1/station/createStation', {
-            'stationCode': station_code,
+            'stationName': self._ellipsize(name, 64) if name else '',
+            'searchQuery': search_query or '',
         })
         return Station(response)
 
