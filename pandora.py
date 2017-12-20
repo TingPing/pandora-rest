@@ -321,6 +321,16 @@ class Client:
         })
         return [Station(s) for s in response['stations']]
 
+    async def transform_shared_station(self, station: Station) -> None:
+        """
+        Transform a shared station to a user station.
+
+        :param station: The station to be transformed from a shared station to a user station.
+        """
+        await self._send_message('v1/station/transformShared', {
+            'stationId': station.station_id,
+        })
+
     async def create_station(self, music_id: str, name: Optional[str] = None,
                              search_query: Optional[str] = None) -> Station:
         """
