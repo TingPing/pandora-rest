@@ -40,14 +40,9 @@ class RecommendationType(enum.Enum):
 class Art:
     def __init__(self, art: dict) -> None:
         self._art = art
-        self.x_small = self._art.get('90')
-        self.small = self._art.get('130')
-        self.medium = self._art.get('500')
-        self.large = self._art.get('640')
-        self.x_large = self._art.get('1080')
         self._sizes = sorted(self._art.keys())
 
-    def get_best_url_for_size(self, size: int) -> str:
+    def get_url_for_size(self, size: int) -> str:
         """
         Obtains the Url of the art that is closest in size
         to the desired size or an empty string if there is no art.

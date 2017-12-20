@@ -25,10 +25,13 @@ async def login():
     stations = await client.get_stations()
     print(stations)
     station = stations[0]
+    print(station)
     # await client.update_station(station, name='Super Awesome Jams')
     # await client.update_station(station, description='Nothing but the most Super Awesome Jams')
     playlist = await client.get_playlist_fragment(station)
     print(playlist)
+    track = playlist[0]
+    print(track)
     # track_with_lyrics = None
     # for track in playlist:
         # if track.lyric_id:
@@ -38,14 +41,30 @@ async def login():
     # print(track_with_lyrics)
     # for line in lyric.lines:
         # print(line)
-    # artist_info = await client.get_artist_info(playlist[0].artist_seo_token)
+    # artist_info = await client.get_artist_info(track.artist_seo_token)
     # print(artist_info.bio)
-    search = await client.search('Pantera')
-    print(search)
+    # search = await client.search('Pantera')
+    # print(search)
     with open('output.mp3', 'wb') as f:
         session = soupy.Session()
-        response = await session.get(playlist[0].audio_url)
+        response = await session.get(track.audio_url)
         f.write(response.body)
+
+    station_art_url = station.art.get_url_for_size(500)
+
+    if station_art_url:
+        with open('station-art.jpeg', 'wb') as f:
+            session = soupy.Session()
+            response = await session.get(station_art_url)
+            f.write(response.body)
+
+    cover_art_url = track.art.get_url_for_size(500)
+
+    if cover_art_url:
+        with open('cover-art.jpeg', 'wb') as f:
+            session = soupy.Session()
+            response = await session.get(cover_art_url)
+            f.write(response.body)
 
 asyncio.ensure_future(login()).add_done_callback(lambda x: loop.stop())
 

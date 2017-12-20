@@ -3,4 +3,6 @@
 __pycache__/
 /docs/_build/
 output.mp3
+cover-art.jpeg
+station-art.jpeg
 gbulb/
