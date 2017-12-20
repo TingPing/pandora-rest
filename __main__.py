@@ -38,7 +38,7 @@ async def login():
     # print(track_with_lyrics)
     # for line in lyric.lines:
         # print(line)
-    # artist_info = await client.get_artist_info(playlist[0].artist_music_id)
+    # artist_info = await client.get_artist_info(playlist[0].artist_seo_token)
     # print(artist_info.bio)
     search = await client.search('Pantera')
     print(search)
