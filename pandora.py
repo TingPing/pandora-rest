@@ -112,11 +112,16 @@ class Lyric:
 
 class ArtistInfo:
     def __init__(self, info: dict) -> None:
+        self.artist_name = info.get('name', '')
         self.bio = info.get('bio', '')
         self.artist_music_id = info.get('musicId', '')
         self.is_bookmarked = info.get('isBookmarked', False)
+        self.art = Art({i['size']: i['url'] for i in info.get('art', [])})
         self.discography = [DiscographyAlbum(a) for a in info.get('discography', [])]
         self.similar = [SimilarArtist(a) for a in info.get('similar', [])]
+
+    def __repr__(self):
+        return "<ArtistInfo '{}: {}'>".format(self.artist_name, self.artist_music_id)
 
 
 class DiscographyAlbum:
@@ -128,6 +133,9 @@ class DiscographyAlbum:
         self.album_seo_token = album.get('SeoToken', '')
         self.art = Art({i['size']: i['url'] for i in album.get('art', [])})
 
+    def __repr__(self):
+        return "<DiscographyAlbum '{}: {}'>".format(self.album_title, self.album_seo_token)
+
 
 class SimilarArtist:
     def __init__(self, similar: dict) -> None:
@@ -136,24 +144,23 @@ class SimilarArtist:
         self.artist_seo_token = similar.get('seoToken', '')
         self.art = Art({i['size']: i['url'] for i in similar.get('art', [])})
 
+    def __repr__(self):
+        return "<SimilarArtist '{}: {}'>".format(self.artist_name, self.artist_music_id)
+
 
 class AlbumInfo:
     def __init__(self, info: dict) -> None:
         self.review = info.get('review', '')
         self.is_bookmarked = info.get('isBookmarked', False)
-        self.tracks = [AlbumTrack(t) for t in info.get('tracks', [])]
+        self.album_seo_token = info.get('seoToken', '')
+        self.artist_seo_token = info.get('artistSeoToken', '')
+        self.album_title = info.get('albumTitle', '')
+        self.artist_name = info.get('artistName', '')
+        self.art = Art({i['size']: i['url'] for i in info.get('art', [])})
+        self.tracks = [InfoTrack(t) for t in info.get('tracks', [])]
 
-
-class AlbumTrack:
-    def __init__(self, track: dict) -> None:
-        self.title = track.get('songTitle', '')
-        self.album_title = track.get('albumTitle', '')
-        self.artist_name = track.get('artistName', '')
-        self.music_id = track.get('musicId', '')
-        self.track_seo_token = track.get('SeoToken', '')
-        self.pandora_id = track.get('pandoraId', '')
-        self.length = int(track.get('trackLength', 0))
-        self.art = Art({i['size']: i['url'] for i in track.get('albumArt', [])})
+    def __repr__(self):
+        return "<AlbumInfo '{}: {}'>".format(self.album_title, self.artist_name)
 
 
 class TrackInfo:
@@ -170,21 +177,27 @@ class TrackInfo:
         self.pandora_id = info.get('pandoraId', '')
         self.length = int(info.get('trackLength', 0))
         self.art = Art({i['size']: i['url'] for i in info.get('albumArt', [])})
-        self.similar = [SimilarTrack(a) for a in info.get('similar', [])]
+        self.similar = [InfoTrack(a) for a in info.get('similar', [])]
+
+    def __repr__(self):
+        return "<TrackInfo '{}: {}'>".format(self.artist_name, self.title)
 
 
-class SimilarTrack:
-    def __init__(self, similar: dict) -> None:
-        self.title = similar.get('songTitle', '')
-        self.album_title = similar.get('albumTitle', '')
-        self.artist_name = similar.get('artistName', '')
-        self.music_id = similar.get('musicId', '')
-        self.album_seo_token = similar.get('albumSeoToken', '')
-        self.artist_seo_token = similar.get('artistSeoToken', '')
-        self.track_seo_token = similar.get('trackSeoToken', '')
-        self.pandora_id = similar.get('pandoraId', '')
-        self.length = int(similar.get('trackLength', 0))
-        self.art = Art({i['size']: i['url'] for i in similar.get('albumArt', [])})
+class InfoTrack:
+    def __init__(self, track: dict) -> None:
+        self.title = track.get('songTitle', '')
+        self.album_title = track.get('albumTitle', '')
+        self.artist_name = track.get('artistName', '')
+        self.music_id = track.get('musicId', '')
+        self.album_seo_token = track.get('albumSeoToken', '')
+        self.artist_seo_token = track.get('artistSeoToken', '')
+        self.track_seo_token = track.get('trackSeoToken', '')
+        self.pandora_id = track.get('pandoraId', '')
+        self.length = int(track.get('trackLength', 0))
+        self.art = Art({i['size']: i['url'] for i in track.get('albumArt', [])})
+
+    def __repr__(self):
+        return "<InfoTrack '{}: {}'>".format(self.artist_name, self.title)
 
 
 class Station:
@@ -243,7 +256,7 @@ class StationRecommendation:
             self.station_name = rec['name']
             self.genre_music_id = rec['musicId']
             self.description = rec.get('description', '')
-            self.sample_tracks = [RecommendationSampleTrack(t) for t in rec.get('sampleTracks', [])]
+            self.sample_tracks = [InfoTrack(t) for t in rec.get('sampleTracks', [])]
             self.art = Art({i['size']: i['url'] for i in rec.get('headerArt', [])})
 
     def __repr__(self):
@@ -251,16 +264,26 @@ class StationRecommendation:
         return "<StationRecommendation '{}: {}'>".format(self.recommendation_type.name, music_id)
 
 
-class RecommendationSampleTrack:
-    def __init__(self, track: dict) -> None:
-        self.title = track.get('songTitle', '')
-        self.album_title = track.get('albumTitle', '')
-        self.artist_name = track.get('artistName', '')
-        self.music_id = track.get('musicId', '')
-        self.pandora_id = track.get('pandoraId', '')
-        self.length = int(track.get('trackLength', 0))
-        self.album_seo_token = track.get('albumSeoToken', '')
-        self.art = Art({i['size']: i['url'] for i in track.get('albumArt', [])})
+class GenreCategory:
+    def __init__(self, category: dict) -> None:
+        self.name = category.get('name', '')
+        self.token = category.get('token', '')
+        self.art = Art({i['size']: i['url'] for i in category.get('art', [])})
+
+    def __repr__(self):
+        return "<GenreCategory '{}: {}'>".format(self.name, self.token)
+
+
+class GenreStation:
+    def __init__(self, station: dict) -> None:
+        self.name = station.get('name', '')
+        self.genre_music_id = station.get('musicId', '')
+        self.description = station.get('description', '')
+        self.art = Art({i['size']: i['url'] for i in station.get('art', [])})
+        self.sample_tracks = [InfoTrack(t) for t in station.get('sampleTracks', [])]
+
+    def __repr__(self):
+        return "<GenreStation '{}: {}'>".format(self.name, self.genre_music_id)
 
 
 class Client:
@@ -553,6 +576,25 @@ class Client:
             'nonExplicit': False, # TODO Tie this to the explicit content filter setting
         })
         return Lyric(response)
+
+    async def get_genre_categories(self) -> List[GenreCategory]:
+        """
+        Get genre categories.
+        """
+        response = await self._send_message('v1/music/genrecategories', {})
+        return [GenreCategory(c) for c in response.get('categories', [])]
+
+    async def get_genre_category_stations(self, genre_category: GenreCategory) -> List[GenreStation]:
+        """
+        Get genre stations for a category.
+
+        :param genre_category: The genre category to get the stations for.
+        """
+
+        response = await self._send_message('v1/music/genres', {
+            'categoryToken': genre_category.token,
+        })
+        return [GenreStation(s) for s in response.get('genres', [])]
 
     async def get_station_recommendations(self) -> List[StationRecommendation]:
         """

@@ -17,6 +17,10 @@ async def login():
     if not password:
         print('Failed to get password')
     await client.login(email, password)
+    # genre_categories =  await client.get_genre_categories()
+    # print(genre_categories)
+    # genres_stations = await client.get_genre_category_stations(genre_categories[0])
+    # print(genres_stations)
     # recommendations = await client.get_station_recommendations()
     # print(recommendations)
     # filter_enabled = await client.get_explicit_content_filter()
