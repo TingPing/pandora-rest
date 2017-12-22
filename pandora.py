@@ -328,12 +328,19 @@ class Client:
         self._hifi_available = 'highQualityStreamingAvailable' in flags
         self._auth_token = response['authToken']
 
+    async def logout(self) -> None:
+        """
+        Logout of the Pandora session.
+        """
+        await self._send_message('v1/auth/logout', {})
+
     async def get_stations(self, amount: int=250) -> List[Station]:
         """
         Obtains users stations.
 
         :param amount: Max number to retreive.
         """
+
         response = await self._send_message('v1/station/getStations', {
             'pageSize': amount,
         })
@@ -463,12 +470,14 @@ class Client:
         """
         await self._send_message('v1/station/playbackPaused', {})
 
-    async def playback_resumed(self) -> None:
+    async def playback_resumed(self, force_active: Optional[bool] = False) -> None:
         """
         Signal that playback has resumed.
+
+        :param force_active: if this session is forced as the active session.
         """
         await self._send_message('v1/station/playbackResumed', {
-            'forceActive': False,
+            'forceActive': force_active,
         })
 
     async def get_explicit_content_filter(self) -> bool:

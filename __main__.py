@@ -32,7 +32,14 @@ async def login():
     print(station)
     # await client.update_station(station, name='Super Awesome Jams')
     # await client.update_station(station, description='Nothing but the most Super Awesome Jams')
-    playlist = await client.get_playlist_fragment(station)
+    try:
+        playlist = await client.get_playlist_fragment(station)
+    except Exception as e:
+        print(e)
+        await client.playback_resumed(force_active=True)
+        # The playlist returned with a STREAM_VIOLATION is bogus.
+        # Get a real one.
+        playlist = await client.get_playlist_fragment(station)
     print(playlist)
     track = playlist[0]
     print(track)
@@ -69,6 +76,8 @@ async def login():
             session = soupy.Session()
             response = await session.get(cover_art_url)
             f.write(response.body)
+
+    await client.logout()
 
 asyncio.ensure_future(login()).add_done_callback(lambda x: loop.stop())
 
