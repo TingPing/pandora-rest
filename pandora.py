@@ -37,6 +37,13 @@ class RecommendationType(enum.Enum):
     ARTIST = 'artists'
 
 
+class StationSeedType(enum.Enum):
+    """Station seed types"""
+    TRACK = 0
+    ARTIST = 1
+    GENRE = 2
+
+
 class Art:
     def __init__(self, art: dict) -> None:
         self._art = art
@@ -96,12 +103,6 @@ class Track:
 
     def __repr__(self):
         return "<Track '{}: {}'>".format(self.artist_name, self.title)
-
-
-class StationSeed:
-    def __init__(self, seed: dict) -> None:
-        self.music_id = seed.get('musicId')
-        self.pandora_id = seed.get('pandoraId')
 
 
 class Lyric:
@@ -207,16 +208,89 @@ class Station:
         self.station_id = data['stationId']
         self.pandora_id = data['pandoraId']
         # Nice to have
-        self.initial_seed = StationSeed(data.get('initialSeed', {}))
+        self.art = Art({i['size']: i['url'] for i in data.get('art', [])})
+        self.is_shared = data.get('isShared', True)
+        self.is_transform_allowed = data.get('isTransformAllowed', False)
+        self.is_thumbprint = data.get('isThumbprint', False)
+        self.is_shuffle = data.get('isShuffle', False)
+
+    def __repr__(self):
+        return "<Station '{}: {}'>".format(self.name, self.station_id)
+
+class StationInfo:
+    def __init__(self, data: dict) -> None:
+        # Must have
+        self.name = data['name']
+        self.station_id = data['stationId']
+        self.pandora_id = data['pandoraId']
+        # Nice to have
+        self.seeds = [StationSeed(s) for s in data.get('seeds', [])]
         self.allow_add_seed = data.get('allowAddSeed', False)
         self.art = Art({i['size']: i['url'] for i in data.get('art', [])})
         self.is_thumbprint = data.get('isThumbprint', False)
         self.is_shuffle = data.get('isShuffle', False)
         self.genre = data.get('genre', [])
+        self.is_shared = data.get('isShared', True)
+        self.is_transform_allowed = data.get('isTransformAllowed', False)
+        self.allow_delete = data.get('allowDelete', False)
+        self.allow_edit_description = data.get('allowEditDescription', False)
+        self.allow_rename = data.get('allowRename', False)
         self.description = data.get('description', '')
 
     def __repr__(self):
-        return "<Station '{}: {}'>".format(self.name, self.station_id)
+        return "<StationInfo '{}: {}'>".format(self.name, self.station_id)
+
+
+class StationSeed:
+    def __init__(self, seed: dict) -> None:
+        if 'artist' in seed:
+            self.seed_type = StationSeedType.ARTIST
+            artist = seed['artist']
+            self.artist_music_id = seed.get('musicId', '')
+            self.music_id = ''
+            self.genre_music_id = ''
+            self.track_name = ''
+            self.artist_name = artist.get('artistName', '')
+            self.album_title = ''
+            self.station_name = ''
+            self.art = Art({i['size']: i['url'] for i in artist.get('art', [])})
+        elif 'song' in seed:
+            self.seed_type = StationSeedType.TRACK
+            track = seed['song']
+            self.artist_music_id = ''
+            self.music_id = seed.get('musicId', '')
+            self.genre_music_id = ''
+            self.track_name = track.get('songTitle', '')
+            self.artist_name = track.get('artistSummary', '')
+            self.album_title = track.get('albumTitle', '')
+            self.station_name = ''
+            self.art = Art({i['size']: i['url'] for i in track.get('art', [])})
+        elif 'genre' in seed:
+            self.seed_type = StationSeedType.GENRE
+            genre = seed['genre']
+            self.artist_music_id = ''
+            self.music_id = ''
+            self.genre_music_id = seed.get('musicId', '')
+            self.track_name = ''
+            self.artist_name = ''
+            self.album_title = ''
+            self.station_name = genre.get('stationName', '')
+            self.art = Art({i['size']: i['url'] for i in genre.get('art', [])})
+        self.pandora_id = seed.get('pandoraId')
+
+    def __repr__(self):
+        music_id = self.artist_music_id or self.music_id or self.genre_music_id
+        return "<StationSeed '{}: {}'>".format(self.seed_type.name, music_id)
+
+
+class StationSeedSuggestion:
+    def __init__(self, seed: dict) -> None:
+        self.artist_name = seed.get('name', '')
+        self.artist_music_id = seed.get('musicId', '')
+        self.art = Art({i['size']: i['url'] for i in seed.get('art', [])})
+
+    def __repr__(self):
+        return "<StationSeedSuggestion '{}: {}'>".format(self.artist_name, self.artist_music_id)
 
 
 class SearchResult:
@@ -400,6 +474,59 @@ class Client:
             'name': self._ellipsize(name, 64) if name else station.name,
             'description': self._ellipsize(description, 4000) if description else station.description,
         })
+
+    async def get_station_info(self, station: Station,
+                              is_current_station: Optional[bool] = False) -> StationInfo:
+        """
+        Get the station's info.
+
+        :param station: The station to be get the info for.
+        :is_current_station: If the station is the current station (Optional).
+        """
+        response = await self._send_message('/v1/station/getStationDetails', {
+            'stationId': station.station_id,
+        })
+        return StationInfo(response)
+
+    async def add_station_seed(self, station: Station, music_id: str) -> None:
+        """
+        Add a seed to a station.
+
+        :param station: The station to add the seed to.
+        :music_id: A track music_id or artist_music_id.
+        """
+        await self._send_message('/v1/station/addSeed', {
+            'stationId': station.station_id,
+            'musicId': music_id,
+        })
+
+    async def delete_station_seed(self, station: Station, music_id: str) -> None:
+        """
+        Delete a seed from a station.
+
+        :param station: The station to delete the seed from.
+        :music_id: A track music_id or artist_music_id.
+        """
+        await self._send_message('v1/station/deleteSeed', {
+            'stationId': station.station_id,
+            'musicId': music_id,
+        })
+
+    async def get_station_seed_suggestions(self, station: Station, music_id: str,
+                                           max_results: Optional[int] = 10) -> List[StationSeedSuggestion]:
+        """
+        Get station seed suggestions.
+
+        :param station: The station to get seed suggestions for.
+        :music_id: A track music_id or artist_music_id.
+        :max_results: The max seed suggestions to return (Optional).
+        """
+        response = await self._send_message('v1/search/getSeedSuggestions', {
+            'stationId': station.station_id,
+            'seedMusicId': music_id,
+            'maxResults': max_results,
+        })
+        return [StationSeedSuggestion(s) for s in response]
 
     @staticmethod
     def _ellipsize(string: str, max_size: int) -> str:
