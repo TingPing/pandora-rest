@@ -71,6 +71,9 @@ class Art:
                 closest = self._sizes[pos]
         return self._art[closest]
 
+    def __repr__(self):
+        return "<Art '{}'>".format(self.get_url_for_size(90))
+
 
 class Track:
     def __init__(self, data: dict) -> None:
@@ -98,8 +101,8 @@ class Track:
         self.user_seed = data.get('userSeed')
         self.is_seed = data.get('isSeed', False)
         self.is_bookmarked = data.get('isBookmarked', False)
-        self.lyric_id = data.get('lyricSnippet', {}).get('lyricId')
-        self.lyric_checksum = data.get('lyricSnippet', {}).get('checksum')
+        self.lyric_id = data.get('lyricSnippet', {}).get('lyricId', '')
+        self.lyric_checksum = data.get('lyricSnippet', {}).get('checksum', 0)
 
     def __repr__(self):
         return "<Track '{}: {}'>".format(self.artist_name, self.title)
@@ -107,8 +110,13 @@ class Track:
 
 class Lyric:
     def __init__(self, data: dict) -> None:
+        self.lyric_id = data.get('lyricId', '')
+        self.lyric_checksum = data.get('checksum', 0)
         self.lines = data.get('lines', [])
         self.credits = data.get('credits', [])
+
+    def __repr__(self):
+        return "<Lyric '{}: {}'>".format(self.lyric_id, self.lyric_checksum)
 
 
 class ArtistInfo:
