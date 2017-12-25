@@ -356,6 +356,24 @@ class GenreCategory:
         return "<GenreCategory '{}: {}'>".format(self.name, self.token)
 
 
+class Feedback:
+    def __init__(self, feedback: dict) -> None:
+        self.feedback_id = feedback.get('feedbackId', '')
+        self.is_positive = feedback.get('isPositive', False)
+        self.music_id = feedback.get('musicId', '')
+        self.title = feedback.get('songTitle', '')
+        self.album_title = feedback.get('albumTitle', '')
+        self.artist_name = feedback.get('artistName', '')
+        self.album_seo_token = feedback.get('albumSeoToken', '')
+        self.artist_seo_token = feedback.get('artistSeoToken', '')
+        self.track_seo_token = feedback.get('trackSeoToken', '')
+        self.length = int(feedback.get('trackLength', 0))
+        self.art = Art({i['size']: i['url'] for i in feedback.get('albumArt', [])})
+
+    def __repr__(self):
+        return "<Feedback '{}: {}'>".format(self.title, self.feedback_id)
+
+
 class GenreStation:
     def __init__(self, station: dict) -> None:
         self.name = station.get('name', '')
@@ -491,10 +509,34 @@ class Client:
         :param station: The station to be get the info for.
         :is_current_station: If the station is the current station (Optional).
         """
-        response = await self._send_message('/v1/station/getStationDetails', {
+        response = await self._send_message('v1/station/getStationDetails', {
             'stationId': station.station_id,
         })
         return StationInfo(response)
+
+    async def get_station_feedback(self, station: Station, track_rating: TrackRating,
+                                   amount: Optional[int] = 10, start_index: Optional[int] = 0) -> List[Feedback]:
+        """
+        Get a station's feedback.
+
+        :param station: The station to be get the feedback of.
+        :track_rating: TrackRating.LOVED or TrackRating.BANNED
+        :ammount: The max number of feedbacks to return (Optional).
+        :start_index: The starting index of the feedbacks.
+        """
+
+        if track_rating is TrackRating.NONE: # Nothing to do
+            return []
+
+        is_positive = track_rating is TrackRating.LOVED
+
+        response = await self._send_message('v1/station/getStationFeedback', {
+            'pageSize': amount,
+            'startIndex': start_index,
+            'stationId': station.station_id,
+            'positive': is_positive, 
+        })
+        return [Feedback(f) for f in response.get('feedback', [])] 
 
     async def add_station_seed(self, station: Station, music_id: str) -> None:
         """
@@ -503,7 +545,7 @@ class Client:
         :param station: The station to add the seed to.
         :music_id: A track music_id or artist_music_id.
         """
-        await self._send_message('/v1/station/addSeed', {
+        await self._send_message('v1/station/addSeed', {
             'stationId': station.station_id,
             'musicId': music_id,
         })
@@ -585,7 +627,7 @@ class Client:
 
         :music_id: musicId or artistMusicId.
         """
-        await self._send_message('/v1/bookmark/delete', {
+        await self._send_message('v1/bookmark/delete', {
             'musicId': music_id,
         })
 
@@ -643,18 +685,30 @@ class Client:
         :param track: The track to be rated.
         :param track_rating: The new TrackRating.
         """
+        is_positive = track_rating is TrackRating.LOVED
+
         if track_rating is TrackRating.NONE:
             if track.rating is not TrackRating.NONE:
                 await self._send_message('v1/station/deleteFeedback', {
                     'trackToken': track.token,
-                    'isPositive': True,
+                    'isPositive': is_positive,
                 })
 
         elif track_rating is not track.rating:
-            is_positive = track_rating is TrackRating.LOVED
             await self._send_message('v1/station/addFeedback', {
                 'trackToken': track.token,
                 'isPositive': is_positive,
+            })
+
+    async def delete_feedback(self, feedback: Feedback) -> None:
+        """
+        Delete station feedback.
+
+        :param feedback: The station feedback to delete.
+        """
+            await self._send_message('v1/station/deleteFeedback', {
+                'feedbackId': feedback.feedback_id,
+                'isPositive': feedback.is_positive,
             })
 
     async def get_replay_track(self, track: Track, last_played_track_token: str) -> Track:
