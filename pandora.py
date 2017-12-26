@@ -307,11 +307,11 @@ class StationSeed:
         if 'artist' in seed:
             self.seed_type = StationSeedType.ARTIST
             artist = seed['artist']
-            self.artist_music_id = seed.get('musicId', '')
+            self.artist_music_id = seed['musicId']
             self.music_id = ''
             self.genre_music_id = ''
             self.track_name = ''
-            self.artist_name = artist.get('artistName', '')
+            self.artist_name = artist['artistName']
             self.album_title = ''
             self.station_name = ''
             self.art = Art({i['size']: i['url'] for i in artist.get('art', [])})
@@ -319,11 +319,11 @@ class StationSeed:
             self.seed_type = StationSeedType.TRACK
             track = seed['song']
             self.artist_music_id = ''
-            self.music_id = seed.get('musicId', '')
+            self.music_id = seed['musicId']
             self.genre_music_id = ''
-            self.track_name = track.get('songTitle', '')
-            self.artist_name = track.get('artistSummary', '')
-            self.album_title = track.get('albumTitle', '')
+            self.track_name = track['songTitle']
+            self.artist_name = track['artistSummary']
+            self.album_title = track['albumTitle']
             self.station_name = ''
             self.art = Art({i['size']: i['url'] for i in track.get('art', [])})
         elif 'genre' in seed:
@@ -331,11 +331,11 @@ class StationSeed:
             genre = seed['genre']
             self.artist_music_id = ''
             self.music_id = ''
-            self.genre_music_id = seed.get('musicId', '')
+            self.genre_music_id = seed['musicId']
             self.track_name = ''
             self.artist_name = ''
             self.album_title = ''
-            self.station_name = genre.get('stationName', '')
+            self.station_name = genre['stationName']
             self.art = Art({i['size']: i['url'] for i in genre.get('art', [])})
 
     def __repr__(self):
