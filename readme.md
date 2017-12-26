@@ -5,13 +5,17 @@
 - pygobject
 - libsoup
 - libsecret
-
-### Tests only
-
-- pytest-asyncio
+- pytest-asyncio (tests-only)
+- sphinx-autodoc-typehints (docs-only)
 
 ## Testing
 
 ```
-pytest-3
+python3 -m pytest
+```
+
+## Building docs
+
+```
+python3 -m sphinx -b html docs _html
 ```
