@@ -87,7 +87,6 @@ class TrackBase:
         self.album_seo_token = data['albumSeoToken']
         self.artist_seo_token = data['artistSeoToken']
         self.track_seo_token = data['trackSeoToken']
-        self.pandora_id = data['pandoraId']
         self.amazon_url = data['amazonUrl']
         self.length = int(data.get('trackLength', 0))
         self.art = Art({i['size']: i['url'] for i in data.get('albumArt', [])})
@@ -99,7 +98,6 @@ class ArtistBase:
         self.artist_name = data['name']
         self.artist_music_id = data['musicId']
         self.artist_seo_token = data['seoToken']
-        self.pandora_id = data['pandoraId']
         self.art = Art({i['size']: i['url'] for i in data.get('art', [])})
 
 
@@ -108,7 +106,6 @@ class AlbumBase:
     def __init__(self, data: dict) -> None:
         self.album_seo_token = data['seoToken']
         self.album_title = data['albumTitle']
-        self.pandora_id = data['pandoraId']
         self.art = Art({i['size']: i['url'] for i in data.get('art', [])})
 
 
@@ -117,7 +114,6 @@ class StationBase:
     def __init__(self, data: dict) -> None:
         self.name = data['name']
         self.station_id = data['stationId']
-        self.pandora_id = data['pandoraId']
         self.is_shared = data['isShared']
         self.is_transform_allowed = data['isTransformAllowed']
         self.is_thumbprint = data['isThumbprint']
@@ -235,7 +231,6 @@ class AlbumInfo(AlbumBase):
         self.album_seo_token = info['seoToken']
         self.artist_seo_token = info['artistSeoToken']
         self.artist_name = info['artistName']
-        self.pandora_id = info['pandoraId']
         self.is_bookmarked = info['isBookmarked']
         self.amazon_url = info['amazonUrl']
         self.tracks = [InfoTrack(t) for t in info.get('tracks', [])]
@@ -341,7 +336,6 @@ class StationSeed:
             self.album_title = ''
             self.station_name = genre.get('stationName', '')
             self.art = Art({i['size']: i['url'] for i in genre.get('art', [])})
-        self.pandora_id = seed.get('pandoraId')
 
     def __repr__(self):
         music_id = self.artist_music_id or self.music_id or self.genre_music_id
