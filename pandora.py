@@ -183,6 +183,7 @@ class ArtistInfo(ArtistBase):
         super().__init__(info)
         self.bio = info.get('bio', '')
         self.is_bookmarked = info['isBookmarked']
+        self.listener_count = info['listenerCount']
         self.discography = [DiscographyAlbum(a) for a in info.get('discography', [])]
         self.similar = [SimilarArtist(a) for a in info.get('similar', [])]
 
@@ -349,8 +350,9 @@ class StationSeedSuggestion:
     Endpoint(s): v1/search/getSeedSuggestions
     """
     def __init__(self, seed: dict) -> None:
-        self.artist_name = seed.get('name', '')
-        self.artist_music_id = seed.get('musicId', '')
+        self.artist_name = seed['name']
+        self.artist_music_id = seed['musicId']
+        self.listener_count = seed['listenerCount']
         self.art = Art({i['size']: i['url'] for i in seed.get('art', [])})
 
     def __repr__(self):
@@ -386,6 +388,7 @@ class SearchResult:
             self.artist_music_id = ''
             self.genre_music_id = result['musicId']
         self.art = Art({i['size']: i['url'] for i in result.get('art', [])})
+        self.listener_count = result['listenerCount']
 
     def __repr__(self):
         return "<SearchResult '{}: {}'>".format(self.result_type.name, self.music_id)
@@ -415,6 +418,7 @@ class StationRecommendation:
             self.description = rec.get('description', '')
             self.sample_tracks = [InfoTrack(t) for t in rec.get('sampleTracks', [])]
             self.art = Art({i['size']: i['url'] for i in rec.get('headerArt', [])})
+        self.listener_count = rec['listenerCount']
 
     def __repr__(self):
         music_id = self.artist_music_id or self.genre_music_id
@@ -428,8 +432,10 @@ class GenreCategory:
     Endpoint(s): v1/music/genrecategories
     """
     def __init__(self, category: dict) -> None:
-        self.name = category.get('name', '')
-        self.token = category.get('token', '')
+        self.name = category['name']
+        self.token = category['token']
+        self.station_count = category['stationCount']
+        self.listener_count = category['listenerCount']
         self.art = Art({i['size']: i['url'] for i in category.get('art', [])})
 
     def __repr__(self):
@@ -443,8 +449,9 @@ class GenreStation:
     Endpoint(s): v1/music/genres
     """
     def __init__(self, station: dict) -> None:
-        self.name = station.get('name', '')
-        self.genre_music_id = station.get('musicId', '')
+        self.name = station['name']
+        self.genre_music_id = station['musicId']
+        self.listener_count = station['listenerCount']
         self.description = station.get('description', '')
         self.art = Art({i['size']: i['url'] for i in station.get('art', [])})
         self.sample_tracks = [InfoTrack(t) for t in station.get('sampleTracks', [])]
