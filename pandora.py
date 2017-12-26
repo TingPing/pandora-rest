@@ -314,6 +314,8 @@ class StationSeed:
             self.artist_name = artist['artistName']
             self.album_title = ''
             self.station_name = ''
+            self.artist_seo_token = seed['SeoToken']
+            self.track_seo_token = ''
             self.art = Art({i['size']: i['url'] for i in artist.get('art', [])})
         elif 'song' in seed:
             self.seed_type = StationSeedType.TRACK
@@ -324,6 +326,8 @@ class StationSeed:
             self.track_name = track['songTitle']
             self.artist_name = track['artistSummary']
             self.album_title = track['albumTitle']
+            self.artist_seo_token = ''
+            self.track_seo_token = seed['SeoToken']
             self.station_name = ''
             self.art = Art({i['size']: i['url'] for i in track.get('art', [])})
         elif 'genre' in seed:
@@ -335,6 +339,8 @@ class StationSeed:
             self.track_name = ''
             self.artist_name = ''
             self.album_title = ''
+            self.artist_seo_token = ''
+            self.track_seo_token = ''
             self.station_name = genre['stationName']
             self.art = Art({i['size']: i['url'] for i in genre.get('art', [])})
 
@@ -374,12 +380,18 @@ class SearchResult:
             self.station_name = ''
             self.music_id = ''
             self.artist_music_id = result['musicId']
+            self.artist_seo_token = result['SeoToken']
+            self.track_seo_token = ''
+            self.listener_count = result['listenerCount']
         elif self.result_type is ResultType.TRACK:
             self.artist_name = result['artistName']
             self.track_name = result['name']
             self.station_name = ''
             self.music_id = result['musicId']
             self.artist_music_id = ''
+            self.artist_seo_token = ''
+            self.track_seo_token = result['SeoToken']
+            self.listener_count = 0
         elif self.result_type is ResultType.GENRE:
             self.artist_name = ''
             self.track_name = ''
@@ -387,8 +399,10 @@ class SearchResult:
             self.music_id = ''
             self.artist_music_id = ''
             self.genre_music_id = result['musicId']
+            self.artist_seo_token = ''
+            self.track_seo_token = ''
+            self.listener_count = result['listenerCount']
         self.art = Art({i['size']: i['url'] for i in result.get('art', [])})
-        self.listener_count = result['listenerCount']
 
     def __repr__(self):
         return "<SearchResult '{}: {}'>".format(self.result_type.name, self.music_id)
