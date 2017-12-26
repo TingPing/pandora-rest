@@ -7,6 +7,7 @@
 - libsecret
 - pytest-asyncio (tests-only)
 - sphinx-autodoc-typehints (docs-only)
+- sphinx_rtd_theme (docs-only)
 
 ## Testing
 
