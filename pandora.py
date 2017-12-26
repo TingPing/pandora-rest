@@ -29,6 +29,7 @@ class ResultType(enum.Enum):
     """Search result types"""
     TRACK = 'track'
     ARTIST = 'artist'
+    GENRE = 'genre'
 
 
 class RecommendationType(enum.Enum):
@@ -376,13 +377,22 @@ class SearchResult:
         if self.result_type is ResultType.ARTIST:
             self.artist_name = result['name']
             self.track_name = ''
+            self.station_name = ''
             self.music_id = ''
             self.artist_music_id = result['musicId']
         elif self.result_type is ResultType.TRACK:
             self.artist_name = result['artistName']
             self.track_name = result['name']
+            self.station_name = ''
             self.music_id = result['musicId']
             self.artist_music_id = ''
+        elif self.result_type is ResultType.GENRE:
+            self.artist_name = ''
+            self.track_name = ''
+            self.station_name = result['name']
+            self.music_id = ''
+            self.artist_music_id = ''
+            self.genre_music_id = result['musicId']
         self.art = Art({i['size']: i['url'] for i in result.get('art', [])})
 
     def __repr__(self):
@@ -976,7 +986,6 @@ class Client:
         :param max_items_per_category: Max Items Per Category (Optional).
         :return: A list of SearchResult objects.
         """
-        # TODO: search genre stations
         response = await self._send_message('v1/search/fullSearch', {
             'query': query,
             'type': search_type.value,
