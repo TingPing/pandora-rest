@@ -564,7 +564,7 @@ class Client:
 
         :param music_id: A track_music_id, artist_music_id or genre_music_id.
         :param name: The name of the new station (Optional, 64 char limit).
-        :param search_query: The search query if music_id was got from a search (Optional).
+        :param search_query: The search query if music_id was got from a search.
         :return: A newly created Station object. If a Station already exists with music_id \
         as one of it's seeds, the Station object will effectively be a copy of that existing Station. 
         """
@@ -616,7 +616,7 @@ class Client:
         Endpoint(s): v1/station/getStationDetails
 
         :param station: The station to be get the info for.
-        :is_current_station: If the station is the current station (Optional).
+        :is_current_station: If the station is the current station.
         :return: A StationInfo object.
         """
         response = await self._send_message('v1/station/getStationDetails', {
@@ -634,8 +634,8 @@ class Client:
 
         :param station: The station to be get the feedback of.
         :param track_rating: TrackRating.LOVED or TrackRating.BANNED
-        :param ammount: The max number of feedbacks to return (Optional).
-        :param start_index: The starting index of the feedbacks (Optional).
+        :param ammount: The max number of feedbacks to return.
+        :param start_index: The starting index of the feedbacks.
         :return: List of Feedback objects.
         """
 
@@ -689,7 +689,7 @@ class Client:
 
         :param station: The station to get seed suggestions for.
         :music_id: A track music_id or artist_music_id.
-        :max_results: The max seed suggestions to return (Optional).
+        :max_results: The max seed suggestions to return.
         :return: A list of StationSeedSuggestion objects.
         """
         response = await self._send_message('v1/search/getSeedSuggestions', {
@@ -713,8 +713,8 @@ class Client:
         Endpoint(s): v1/playlist/getFragment
 
         :param station: Station to get tracks for.
-        :param is_start: If this is the first playlist (Optional).
-        :param audio_format: Format for urls in tracks (Optional).
+        :param is_start: If this is the first playlist.
+        :param audio_format: Format for urls in tracks.
         :return: A list of Track objects.
         """
         response = await self._send_message('v1/playlist/getFragment', {
@@ -787,7 +787,7 @@ class Client:
 
         Endpoint(s): v1/station/playbackResumed
 
-        :param force_active: if this session is forced as the active session (Optional).
+        :param force_active: if this session is forced as the active session.
         """
         await self._send_message('v1/station/playbackResumed', {
             'forceActive': force_active,
@@ -982,8 +982,8 @@ class Client:
         Endpoint(s): v1/search/fullSearch
 
         :param query: A query string.
-        :param search_type: SearchType (Optional).
-        :param max_items_per_category: Max Items Per Category (Optional).
+        :param search_type: SearchType.
+        :param max_items_per_category: Max Items Per Category.
         :return: A list of SearchResult objects.
         """
         response = await self._send_message('v1/search/fullSearch', {
