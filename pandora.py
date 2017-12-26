@@ -495,6 +495,8 @@ class Client:
         Obtains a users auth-token and stores it in the session.
         Required before any other calls.
 
+        Endpoint(s): v1/auth/login
+
         :param email: Users email
         :param password: Users password
         """
@@ -511,6 +513,8 @@ class Client:
     async def logout(self) -> None:
         """
         Logout of the Pandora session.
+
+        Endpoint(s): v1/auth/logout
         """
         await self._send_message('v1/auth/logout', {})
 
@@ -518,7 +522,10 @@ class Client:
         """
         Obtains users stations.
 
+        Endpoint(s): v1/station/getStations
+
         :param amount: Max number to retreive.
+        :return: A list of Station objects.
         """
 
         response = await self._send_message('v1/station/getStations', {
@@ -529,6 +536,8 @@ class Client:
     async def transform_shared_station(self, station: Station) -> None:
         """
         Transform a shared station to a user station.
+
+        Endpoint(s): v1/station/transformShared
 
         :param station: The station to be transformed from a shared station to a user station.
         """
@@ -541,9 +550,13 @@ class Client:
         """
         Creates a new station.
 
+        Endpoint(s): v1/station/createStation
+
         :param music_id: A track_music_id, artist_music_id or genre_music_id.
         :param name: The name of the new station (Optional, 64 char limit).
         :param search_query: The search query if music_id was got from a search (Optional).
+        :return: A newly created Station object. If a Station already exists with music_id \
+        as one of it's seeds, the Station object will effectively be a copy of that existing Station. 
         """
         sig = 'mc' if music_id.startswith('S') else 'mi'
         station_code = sig + music_id
@@ -559,6 +572,8 @@ class Client:
         """
         Deletes a station.
 
+        Endpoint(s): v1/station/removeStation
+
         :param station: the station to be deleted.
         """
         await self._send_message('v1/station/removeStation', {
@@ -570,6 +585,8 @@ class Client:
                              description: Optional[str] = None) -> None:
         """
         Update a station's name and/or description.
+
+        Endpoint(s): v1/station/updateStation
 
         :param station: The station to be renamed.
         :param name: The new name of the station (64 char limit) or ``None`` to not change it.
@@ -586,8 +603,11 @@ class Client:
         """
         Get the station's info.
 
+        Endpoint(s): v1/station/getStationDetails
+
         :param station: The station to be get the info for.
         :is_current_station: If the station is the current station (Optional).
+        :return: A StationInfo object.
         """
         response = await self._send_message('v1/station/getStationDetails', {
             'stationId': station.station_id,
@@ -600,10 +620,13 @@ class Client:
         """
         Get a station's feedback.
 
+        Endpoint(s): v1/station/getStationFeedback
+
         :param station: The station to be get the feedback of.
-        :track_rating: TrackRating.LOVED or TrackRating.BANNED
-        :ammount: The max number of feedbacks to return (Optional).
-        :start_index: The starting index of the feedbacks.
+        :param track_rating: TrackRating.LOVED or TrackRating.BANNED
+        :param ammount: The max number of feedbacks to return (Optional).
+        :param start_index: The starting index of the feedbacks (Optional).
+        :return: List of Feedback objects.
         """
 
         if track_rating is TrackRating.NONE: # Nothing to do
@@ -623,6 +646,8 @@ class Client:
         """
         Add a seed to a station.
 
+        Endpoint(s): v1/station/addSeed
+
         :param station: The station to add the seed to.
         :music_id: A track music_id or artist_music_id.
         """
@@ -634,6 +659,8 @@ class Client:
     async def delete_station_seed(self, station: Station, music_id: str) -> None:
         """
         Delete a seed from a station.
+
+        Endpoint(s): v1/station/deleteSeed
 
         :param station: The station to delete the seed from.
         :music_id: A track music_id or artist_music_id.
@@ -648,9 +675,12 @@ class Client:
         """
         Get station seed suggestions.
 
+        Endpoint(s): v1/search/getSeedSuggestions
+
         :param station: The station to get seed suggestions for.
         :music_id: A track music_id or artist_music_id.
         :max_results: The max seed suggestions to return (Optional).
+        :return: A list of StationSeedSuggestion objects.
         """
         response = await self._send_message('v1/search/getSeedSuggestions', {
             'stationId': station.station_id,
@@ -665,14 +695,17 @@ class Client:
             string = string[:max_size - 1] + '…'
         return string
 
-    async def get_playlist_fragment(self, station: Station, is_start: bool=True,
-                                    audio_format: AudioFormat=AudioFormat.MP3) -> List[Track]:
+    async def get_playlist_fragment(self, station: Station, is_start: Optional[bool] = True,
+                                    audio_format: Optional[AudioFormat] = AudioFormat.MP3) -> List[Track]:
         """
         Gets a playlist (list of tracks) for a station.
 
+        Endpoint(s): v1/playlist/getFragment
+
         :param station: Station to get tracks for.
-        :param is_start: If this is the first playlist.
-        :param audio_format: Format for urls in tracks
+        :param is_start: If this is the first playlist (Optional).
+        :param audio_format: Format for urls in tracks (Optional).
+        :return: A list of Track objects.
         """
         response = await self._send_message('v1/playlist/getFragment', {
             'stationId': station.station_id,
@@ -686,6 +719,8 @@ class Client:
         """
         Set a track Tired.
 
+        Endpoint(s): v1/listener/addTiredSong
+
         :param track: The track to be set Tired.
         """
         await self._send_message('v1/listener/addTiredSong', {
@@ -695,6 +730,8 @@ class Client:
     async def add_bookmark(self, music_id: str) -> None:
         """
         Bookmark a track or artist.
+
+        Endpoint(s): v1/bookmark/add
 
         :music_id: musicId or artistMusicId.
         """
@@ -706,6 +743,8 @@ class Client:
         """
         Delete a previously bookmarked track or artist.
 
+        Endpoint(s): v1/bookmark/delete
+
         :music_id: musicId or artistMusicId.
         """
         await self._send_message('v1/bookmark/delete', {
@@ -716,6 +755,8 @@ class Client:
         """
         Signal that a track has started.
 
+        Endpoint(s): v1/station/trackStarted
+
         :param track: The track to be started.
         """
         await self._send_message('v1/station/trackStarted', {
@@ -725,6 +766,8 @@ class Client:
     async def playback_paused(self) -> None:
         """
         Signal that playback has paused.
+
+        Endpoint(s): v1/station/playbackPaused
         """
         await self._send_message('v1/station/playbackPaused', {})
 
@@ -732,7 +775,9 @@ class Client:
         """
         Signal that playback has resumed.
 
-        :param force_active: if this session is forced as the active session.
+        Endpoint(s): v1/station/playbackResumed
+
+        :param force_active: if this session is forced as the active session (Optional).
         """
         await self._send_message('v1/station/playbackResumed', {
             'forceActive': force_active,
@@ -741,6 +786,10 @@ class Client:
     async def get_explicit_content_filter(self) -> bool:
         """
         Get if the explicit content filter is enabled.
+
+        Endpoint(s): v1/listener/updateSettings
+
+        :return: The state of the Explicit Content Filter. True if enabled, False if not.
         """
         response = await self._send_message('v1/listener/updateSettings', {})
         return response['explicitContentFilterEnabled']
@@ -748,6 +797,8 @@ class Client:
     async def set_explicit_content_filter(self, enable: bool, email: str, password: str) -> None:
         """
         Enable or disable the explicit content filter.
+
+        Endpoint(s): v1/listener/updateAccount
 
         :enable: if the filter should be enabled.
         :param email: Users email
@@ -762,6 +813,8 @@ class Client:
     async def rate_track(self, track: Track, track_rating: TrackRating) -> None:
         """
         Rate a track.
+
+        Endpoint(s): v1/station/deleteFeedback, v1/station/addFeedback
 
         :param track: The track to be rated.
         :param track_rating: The new TrackRating.
@@ -785,6 +838,8 @@ class Client:
         """
         Delete station feedback.
 
+        Endpoint(s): v1/station/deleteFeedback
+
         :param feedback: The station feedback to delete.
         """
         await self._send_message('v1/station/deleteFeedback', {
@@ -796,8 +851,11 @@ class Client:
         """
         Gets a fresh track for replay.
 
+        Endpoint(s): 'v1/ondemand/getReplayTrack'
+
         :param track: The track to be replayed.
         :param last_played_track_token: The trackToken of the last played track.
+        :return: A Track object.
         """
         response = await self._send_message('v1/ondemand/getReplayTrack', {
             'stationId': track.station_id,
@@ -810,7 +868,10 @@ class Client:
         """
         Get artist info.
 
-        :artist_seo_token: artistSeoToken.
+        Endpoint(s): v1/music/artist
+
+        :param artist_seo_token: artistSeoToken.
+        :return: An ArtistInfo object.
         """
         response = await self._send_message('v1/music/artist', {
             'token': artist_seo_token,
@@ -821,7 +882,10 @@ class Client:
         """
         Get album info.
 
+        Endpoint(s): v1/music/album
+
         :param album_seo_token: albumSeoToken.
+        :return: An AlbumInfo object.
         """
         response = await self._send_message('v1/music/album', {
             'token': album_seo_token,
@@ -832,7 +896,10 @@ class Client:
         """
         Get track info.
 
+        Endpoint(s): v1/music/track
+
         :param track_seo_token: trackSeoToken.
+        :return: A TrackInfo object.
         """
         response = await self._send_message('v1/music/track', {
             'token': track_seo_token,
@@ -843,7 +910,11 @@ class Client:
         """
         Get track lyrics.
 
+        Endpoint(s): v1/music/fullLyrics
+
         :param track: the track to get the lyrics for.
+        :return: A Lyric object. The Lyric object attributes will be empty \
+        if there is no track.lyric_id or track.lyric_checksum.
         """
         if not track.lyric_id or not track.lyric_checksum:
             return Lyric({})
@@ -859,6 +930,10 @@ class Client:
     async def get_genre_categories(self) -> List[GenreCategory]:
         """
         Get genre categories.
+
+        Endpoint(s): v1/music/genrecategories
+
+        :return: A list of GenreCategory objects 
         """
         response = await self._send_message('v1/music/genrecategories', {})
         return [GenreCategory(c) for c in response.get('categories', [])]
@@ -867,7 +942,10 @@ class Client:
         """
         Get genre stations for a category.
 
+        Endpoint(s): v1/music/genres
+
         :param genre_category: The genre category to get the stations for.
+        :return: A list of GenreStation objects for the specified category.
         """
 
         response = await self._send_message('v1/music/genres', {
@@ -878,18 +956,25 @@ class Client:
     async def get_station_recommendations(self) -> List[StationRecommendation]:
         """
         Get station recommendations.
+
+        Endpoint(s): v1/search/getStationRecommendations
+
+        :return: A list of StationRecommendation objects.
         """
         response = await self._send_message('v1/search/getStationRecommendations', {})
         return [StationRecommendation(r, RecommendationType(k)) for k, v in response.items() for r in v]
 
-    async def search(self, query: str, search_type: SearchType=SearchType.ALL,
-                     max_items_per_category: int=50) -> List[SearchResult]:
+    async def search(self, query: str, search_type: Optional[SearchType] = SearchType.ALL,
+                     max_items_per_category: Optional[int] = 50) -> List[SearchResult]:
         """
         Obtains search results.
 
+        Endpoint(s): v1/search/fullSearch
+
         :param query: A query string.
-        :param search_type: SearchType.
-        :param max_items_per_category: Max Items Per Category.
+        :param search_type: SearchType (Optional).
+        :param max_items_per_category: Max Items Per Category (Optional).
+        :return: A list of SearchResult objects.
         """
         # TODO: search genre stations
         response = await self._send_message('v1/search/fullSearch', {
