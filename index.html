@@ -1,0 +1,1300 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Welcome to Pithos’s documentation! &mdash; Pithos 2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Pithos 2.0 documentation" href="#"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> Pithos
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Welcome to Pithos’s documentation!</a><ul>
+<li><a class="reference internal" href="#module-pandora">Pandora</a></li>
+<li><a class="reference internal" href="#module-soupy">Soup</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Pithos</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Welcome to Pithos’s documentation!</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="welcome-to-pithos-s-documentation">
+<h1>Welcome to Pithos’s documentation!<a class="headerlink" href="#welcome-to-pithos-s-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pandora">
+<span id="pandora"></span><h2>Pandora<a class="headerlink" href="#module-pandora" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pandora.AlbumBase">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">AlbumBase</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#AlbumBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.AlbumBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class for all Album like objects.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.AlbumInfo">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">AlbumInfo</code><span class="sig-paren">(</span><em>info: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#AlbumInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.AlbumInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Album info as returned from client.get_album_info.</p>
+<p>Endpoint(s): v1/music/album</p>
+<p>Base class: AlbumBase</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.Art">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">Art</code><span class="sig-paren">(</span><em>art: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#Art"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Art" title="Permalink to this definition">¶</a></dt>
+<dd><p>Art in various sizes from 90 to 1080px.</p>
+<dl class="method">
+<dt id="pandora.Art.get_url_for_size">
+<code class="descname">get_url_for_size</code><span class="sig-paren">(</span><em>size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Art.get_url_for_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Art.get_url_for_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains the Url of the art that is closest in size
+to the desired size or an empty string if there is no art.
+If two sizes are equally close to the desired size,
+return the larger of the two size’s Url.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>size</strong> (<code class="xref py py-class docutils literal"><span class="pre">int</span></code>) – desired size in px</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">art Url or empty string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.ArtistBase">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">ArtistBase</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#ArtistBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.ArtistBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class for all Artist like objects.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.ArtistInfo">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">ArtistInfo</code><span class="sig-paren">(</span><em>info: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#ArtistInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.ArtistInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Artist info as returned from client.get_artist_info.</p>
+<p>Endpoint(s): v1/music/artist</p>
+<p>Base class: ArtistBase</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.AudioFormat">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">AudioFormat</code><a class="reference internal" href="_modules/pandora.html#AudioFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.AudioFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supported formats to request</p>
+<dl class="attribute">
+<dt id="pandora.AudioFormat.AACPLUS">
+<code class="descname">AACPLUS</code><em class="property"> = 'aacplus'</em><a class="headerlink" href="#pandora.AudioFormat.AACPLUS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.AudioFormat.MP3">
+<code class="descname">MP3</code><em class="property"> = 'mp3'</em><a class="headerlink" href="#pandora.AudioFormat.MP3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.AudioFormat.MP3_HIFI">
+<code class="descname">MP3_HIFI</code><em class="property"> = 'mp3-hifi'</em><a class="headerlink" href="#pandora.AudioFormat.MP3_HIFI" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.Client">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">Client</code><a class="reference internal" href="_modules/pandora.html#Client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrapper for the <a class="reference external" href="https://6xq.net/pandora-apidoc/rest/">Pandora REST API</a>.</p>
+<p>Note that <a class="reference internal" href="#pandora.Client.login" title="pandora.Client.login"><code class="xref py py-meth docutils literal"><span class="pre">login()</span></code></a> must be called before any other method.</p>
+<p>All methods raise <code class="xref py py-class docutils literal"><span class="pre">SoupException</span></code> on failure.</p>
+<dl class="method">
+<dt id="pandora.Client.add_bookmark">
+<code class="descname">add_bookmark</code><span class="sig-paren">(</span><em>music_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.add_bookmark"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.add_bookmark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bookmark a track or artist.</p>
+<p>Endpoint(s): v1/bookmark/add</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>music_id</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – music_id or artist_music_id.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.add_station_seed">
+<code class="descname">add_station_seed</code><span class="sig-paren">(</span><em>station</em>, <em>music_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.add_station_seed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.add_station_seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a seed to a station.</p>
+<p>Endpoint(s): v1/station/addSeed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>station</strong> (<a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a>) – The station to add the seed to.</li>
+<li><strong>music_id</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – A music_id or artist_music_id.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">None</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.create_station">
+<code class="descname">create_station</code><span class="sig-paren">(</span><em>music_id</em>, <em>name=None</em>, <em>search_query=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.create_station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.create_station" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new station.</p>
+<p>Endpoint(s): v1/station/createStation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>music_id</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – A music_id, artist_music_id or genre_music_id.</li>
+<li><strong>name</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">str</span></code>]) – The name of the new station (64 char limit).</li>
+<li><strong>search_query</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">str</span></code>]) – The search query if music_id was got from a search.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">If a Station already exists with music_id as one of it’s seeds,         the Station object will effectively be a copy of that existing Station.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.delete_bookmark">
+<code class="descname">delete_bookmark</code><span class="sig-paren">(</span><em>music_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.delete_bookmark"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.delete_bookmark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a previously bookmarked track or artist.</p>
+<p>Endpoint(s): v1/bookmark/delete</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>music_id</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – music_id or artist_music_id.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.delete_feedback">
+<code class="descname">delete_feedback</code><span class="sig-paren">(</span><em>feedback</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.delete_feedback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.delete_feedback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete station feedback.</p>
+<p>Endpoint(s): v1/station/deleteFeedback</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>feedback</strong> (<a class="reference internal" href="#pandora.Feedback" title="pandora.Feedback"><code class="xref py py-class docutils literal"><span class="pre">Feedback</span></code></a>) – The station feedback to delete.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.delete_station">
+<code class="descname">delete_station</code><span class="sig-paren">(</span><em>station</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.delete_station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.delete_station" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes a station.</p>
+<p>Endpoint(s): v1/station/removeStation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>station</strong> (<a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a>) – The station to be deleted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.delete_station_seed">
+<code class="descname">delete_station_seed</code><span class="sig-paren">(</span><em>station</em>, <em>music_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.delete_station_seed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.delete_station_seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a seed from a station.</p>
+<p>Endpoint(s): v1/station/deleteSeed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>station</strong> (<a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a>) – The station to delete the seed from.</li>
+<li><strong>music_id</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – A music_id or artist_music_id.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">None</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_album_info">
+<code class="descname">get_album_info</code><span class="sig-paren">(</span><em>album_seo_token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_album_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_album_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get album info.</p>
+<p>Endpoint(s): v1/music/album</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>album_seo_token</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – A album_seo_token.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pandora.AlbumInfo" title="pandora.AlbumInfo"><code class="xref py py-class docutils literal"><span class="pre">AlbumInfo</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_artist_info">
+<code class="descname">get_artist_info</code><span class="sig-paren">(</span><em>artist_seo_token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_artist_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_artist_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get artist info.</p>
+<p>Endpoint(s): v1/music/artist</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>artist_seo_token</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – A artist_seo_token.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pandora.ArtistInfo" title="pandora.ArtistInfo"><code class="xref py py-class docutils literal"><span class="pre">ArtistInfo</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_explicit_content_filter">
+<code class="descname">get_explicit_content_filter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_explicit_content_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_explicit_content_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get if the explicit content filter is enabled.</p>
+<p>Endpoint(s): v1/listener/updateSettings</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">bool</span></code></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The state of the Explicit Content Filter. <code class="docutils literal"><span class="pre">True</span></code> if enabled, <code class="docutils literal"><span class="pre">False</span></code> if not.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_genre_categories">
+<code class="descname">get_genre_categories</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_genre_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_genre_categories" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get genre categories.</p>
+<p>Endpoint(s): v1/music/genrecategories</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<a class="reference internal" href="#pandora.GenreCategory" title="pandora.GenreCategory"><code class="xref py py-class docutils literal"><span class="pre">GenreCategory</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_genre_category_stations">
+<code class="descname">get_genre_category_stations</code><span class="sig-paren">(</span><em>genre_category</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_genre_category_stations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_genre_category_stations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get genre stations for a category.</p>
+<p>Endpoint(s): v1/music/genres</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>genre_category</strong> (<a class="reference internal" href="#pandora.GenreCategory" title="pandora.GenreCategory"><code class="xref py py-class docutils literal"><span class="pre">GenreCategory</span></code></a>) – The genre category to get the stations for.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<a class="reference internal" href="#pandora.GenreStation" title="pandora.GenreStation"><code class="xref py py-class docutils literal"><span class="pre">GenreStation</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_lyrics">
+<code class="descname">get_lyrics</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_lyrics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_lyrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get track lyrics.</p>
+<p>Endpoint(s): v1/music/fullLyrics</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>track</strong> (<a class="reference internal" href="#pandora.Track" title="pandora.Track"><code class="xref py py-class docutils literal"><span class="pre">Track</span></code></a>) – the track to get the lyrics for.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pandora.Lyric" title="pandora.Lyric"><code class="xref py py-class docutils literal"><span class="pre">Lyric</span></code></a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The Lyric object attributes will be empty         if there is no track.lyric_id or track.lyric_checksum.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_playlist_fragment">
+<code class="descname">get_playlist_fragment</code><span class="sig-paren">(</span><em>station</em>, <em>is_start=True</em>, <em>audio_format=&lt;AudioFormat.MP3: 'mp3'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_playlist_fragment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_playlist_fragment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a playlist (list of tracks) for a station.</p>
+<p>Endpoint(s): v1/playlist/getFragment</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>station</strong> (<a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a>) – Station to get tracks for.</li>
+<li><strong>is_start</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">bool</span></code>]) – If this is the first playlist.</li>
+<li><strong>audio_format</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="#pandora.AudioFormat" title="pandora.AudioFormat"><code class="xref py py-class docutils literal"><span class="pre">AudioFormat</span></code></a>]) – Format for audio_url in tracks.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<a class="reference internal" href="#pandora.Track" title="pandora.Track"><code class="xref py py-class docutils literal"><span class="pre">Track</span></code></a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_replay_track">
+<code class="descname">get_replay_track</code><span class="sig-paren">(</span><em>track</em>, <em>last_played_track_token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_replay_track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_replay_track" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a fresh track for replay.</p>
+<p>Endpoint(s): v1/ondemand/getReplayTrack</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>track</strong> (<a class="reference internal" href="#pandora.Track" title="pandora.Track"><code class="xref py py-class docutils literal"><span class="pre">Track</span></code></a>) – The track to be replayed.</li>
+<li><strong>last_played_track_token</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – The trackToken of the last played track.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pandora.Track" title="pandora.Track"><code class="xref py py-class docutils literal"><span class="pre">Track</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_station_feedback">
+<code class="descname">get_station_feedback</code><span class="sig-paren">(</span><em>station</em>, <em>track_rating</em>, <em>amount=10</em>, <em>start_index=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_station_feedback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_station_feedback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a station’s feedback.</p>
+<p>Endpoint(s): v1/station/getStationFeedback</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>station</strong> (<a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a>) – The station to be get the feedback of.</li>
+<li><strong>track_rating</strong> (<a class="reference internal" href="#pandora.TrackRating" title="pandora.TrackRating"><code class="xref py py-class docutils literal"><span class="pre">TrackRating</span></code></a>) – TrackRating.LOVED or TrackRating.BANNED</li>
+<li><strong>amount</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">int</span></code>]) – The max number of feedbacks to return.</li>
+<li><strong>start_index</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">int</span></code>]) – The starting index of the feedbacks.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<a class="reference internal" href="#pandora.Feedback" title="pandora.Feedback"><code class="xref py py-class docutils literal"><span class="pre">Feedback</span></code></a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_station_info">
+<code class="descname">get_station_info</code><span class="sig-paren">(</span><em>station</em>, <em>is_current_station=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_station_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_station_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the station’s info.</p>
+<p>Endpoint(s): v1/station/getStationDetails</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>station</strong> (<a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a>) – The station to be get the info for.</li>
+<li><strong>is_current_station</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">bool</span></code>]) – If the station is the current station.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#pandora.StationInfo" title="pandora.StationInfo"><code class="xref py py-class docutils literal"><span class="pre">StationInfo</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_station_recommendations">
+<code class="descname">get_station_recommendations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_station_recommendations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_station_recommendations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get station recommendations.</p>
+<p>Endpoint(s): v1/search/getStationRecommendations</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<a class="reference internal" href="#pandora.StationRecommendation" title="pandora.StationRecommendation"><code class="xref py py-class docutils literal"><span class="pre">StationRecommendation</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_station_seed_suggestions">
+<code class="descname">get_station_seed_suggestions</code><span class="sig-paren">(</span><em>station</em>, <em>music_id</em>, <em>max_results=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_station_seed_suggestions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_station_seed_suggestions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get station seed suggestions.</p>
+<p>Endpoint(s): v1/search/getSeedSuggestions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>station</strong> (<a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a>) – The station to get seed suggestions for.</li>
+<li><strong>music_id</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – A track music_id or artist_music_id.</li>
+<li><strong>max_results</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">int</span></code>]) – The max seed suggestions to return.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<a class="reference internal" href="#pandora.StationSeedSuggestion" title="pandora.StationSeedSuggestion"><code class="xref py py-class docutils literal"><span class="pre">StationSeedSuggestion</span></code></a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_stations">
+<code class="descname">get_stations</code><span class="sig-paren">(</span><em>amount=250</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_stations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_stations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains users stations.</p>
+<p>Endpoint(s): v1/station/getStations</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>amount</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">int</span></code>]) – Max number of stations to retreive.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.get_track_info">
+<code class="descname">get_track_info</code><span class="sig-paren">(</span><em>track_seo_token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.get_track_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.get_track_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get track info.</p>
+<p>Endpoint(s): v1/music/track</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>track_seo_token</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – A track_seo_token.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#pandora.TrackInfo" title="pandora.TrackInfo"><code class="xref py py-class docutils literal"><span class="pre">TrackInfo</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.login">
+<code class="descname">login</code><span class="sig-paren">(</span><em>email</em>, <em>password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains a users auth-token and stores it in the session.
+Required before any other calls.</p>
+<p>Endpoint(s): v1/auth/login</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>email</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – Users email.</li>
+<li><strong>password</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – Users password.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">None</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.logout">
+<code class="descname">logout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.logout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logout of the Pandora session.</p>
+<p>Endpoint(s): v1/auth/logout</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.playback_paused">
+<code class="descname">playback_paused</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.playback_paused"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.playback_paused" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signal that playback has paused.</p>
+<p>Endpoint(s): v1/station/playbackPaused</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.playback_resumed">
+<code class="descname">playback_resumed</code><span class="sig-paren">(</span><em>force_active=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.playback_resumed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.playback_resumed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signal that playback has resumed.</p>
+<p>Endpoint(s): v1/station/playbackResumed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>force_active</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">bool</span></code>]) – If this session is to be forced as the active session.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.rate_track">
+<code class="descname">rate_track</code><span class="sig-paren">(</span><em>track</em>, <em>track_rating</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.rate_track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.rate_track" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rate a track.</p>
+<p>Endpoint(s): v1/station/deleteFeedback, v1/station/addFeedback</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>track</strong> (<a class="reference internal" href="#pandora.Track" title="pandora.Track"><code class="xref py py-class docutils literal"><span class="pre">Track</span></code></a>) – The track to be rated.</li>
+<li><strong>track_rating</strong> (<a class="reference internal" href="#pandora.TrackRating" title="pandora.TrackRating"><code class="xref py py-class docutils literal"><span class="pre">TrackRating</span></code></a>) – The new TrackRating.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">None</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.search">
+<code class="descname">search</code><span class="sig-paren">(</span><em>query</em>, <em>search_type=&lt;SearchType.ALL: 'all'&gt;</em>, <em>max_items_per_result_type=50</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains search results.</p>
+<p>Endpoint(s): v1/search/fullSearch</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>query</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – A query string.</li>
+<li><strong>search_type</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="#pandora.SearchType" title="pandora.SearchType"><code class="xref py py-class docutils literal"><span class="pre">SearchType</span></code></a>]) – SearchType.</li>
+<li><strong>max_items_per_result_type</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">int</span></code>]) – Max items per SearchResult type.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<a class="reference internal" href="#pandora.SearchResult" title="pandora.SearchResult"><code class="xref py py-class docutils literal"><span class="pre">SearchResult</span></code></a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.set_explicit_content_filter">
+<code class="descname">set_explicit_content_filter</code><span class="sig-paren">(</span><em>enable</em>, <em>email</em>, <em>password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.set_explicit_content_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.set_explicit_content_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable or disable the explicit content filter.</p>
+<p>Endpoint(s): v1/listener/updateAccount</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>enable</strong> (<code class="xref py py-class docutils literal"><span class="pre">bool</span></code>) – If the filter should be enabled.</li>
+<li><strong>email</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – Users email.</li>
+<li><strong>password</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – Users password.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">None</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.tired_track">
+<code class="descname">tired_track</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.tired_track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.tired_track" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a track Tired.</p>
+<p>Endpoint(s): v1/listener/addTiredSong</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>track</strong> (<a class="reference internal" href="#pandora.Track" title="pandora.Track"><code class="xref py py-class docutils literal"><span class="pre">Track</span></code></a>) – The track to be set Tired.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.track_started">
+<code class="descname">track_started</code><span class="sig-paren">(</span><em>track</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.track_started"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.track_started" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signal that a track has started.</p>
+<p>Endpoint(s): v1/station/trackStarted</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>track</strong> (<a class="reference internal" href="#pandora.Track" title="pandora.Track"><code class="xref py py-class docutils literal"><span class="pre">Track</span></code></a>) – The track to be started.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.transform_shared_station">
+<code class="descname">transform_shared_station</code><span class="sig-paren">(</span><em>station</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.transform_shared_station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.transform_shared_station" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a shared station to a user station.</p>
+<p>Endpoint(s): v1/station/transformShared</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>station</strong> (<a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a>) – The station to be transformed from a shared station to a user station.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pandora.Client.update_station">
+<code class="descname">update_station</code><span class="sig-paren">(</span><em>station</em>, <em>name=None</em>, <em>description=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pandora.html#Client.update_station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Client.update_station" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a station’s name and/or description.</p>
+<p>Endpoint(s): v1/station/updateStation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>station</strong> (<a class="reference internal" href="#pandora.Station" title="pandora.Station"><code class="xref py py-class docutils literal"><span class="pre">Station</span></code></a>) – The station to be updated.</li>
+<li><strong>name</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">str</span></code>]) – The new name of the station (64 char limit) or <code class="docutils literal"><span class="pre">None</span></code> to not change it.</li>
+<li><strong>description</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">str</span></code>]) – The new description of the station (4000 char limit) or <code class="docutils literal"><span class="pre">None</span></code> to not change it.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">None</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.DiscographyAlbum">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">DiscographyAlbum</code><span class="sig-paren">(</span><em>album: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#DiscographyAlbum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.DiscographyAlbum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Artist info discography album</p>
+<p>Base class: AlbumBase</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.Feedback">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">Feedback</code><span class="sig-paren">(</span><em>feedback: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#Feedback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Feedback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Feedback as returned from client.get_station_feedback.</p>
+<p>Endpoint(s): v1/station/getStationFeedback</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.GenreCategory">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">GenreCategory</code><span class="sig-paren">(</span><em>category: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#GenreCategory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.GenreCategory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Genre category as returned from client.get_genre_categories.</p>
+<p>Endpoint(s): v1/music/genrecategories</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.GenreStation">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">GenreStation</code><span class="sig-paren">(</span><em>station: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#GenreStation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.GenreStation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Genre station as returned from client.get_genre_category_stations.</p>
+<p>Endpoint(s): v1/music/genres</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.InfoTrack">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">InfoTrack</code><span class="sig-paren">(</span><em>track: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#InfoTrack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.InfoTrack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class: TrackBase</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.Lyric">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">Lyric</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#Lyric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Lyric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Track Lyrics as returned from client.get_lyrics.</p>
+<p>Endpoint(s): v1/music/fullLyrics</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.RecommendationType">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">RecommendationType</code><a class="reference internal" href="_modules/pandora.html#RecommendationType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.RecommendationType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Station recommendation types</p>
+<dl class="attribute">
+<dt id="pandora.RecommendationType.ARTIST">
+<code class="descname">ARTIST</code><em class="property"> = 'artists'</em><a class="headerlink" href="#pandora.RecommendationType.ARTIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.RecommendationType.GENRE">
+<code class="descname">GENRE</code><em class="property"> = 'genreStations'</em><a class="headerlink" href="#pandora.RecommendationType.GENRE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.ResultType">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">ResultType</code><a class="reference internal" href="_modules/pandora.html#ResultType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.ResultType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search result types</p>
+<dl class="attribute">
+<dt id="pandora.ResultType.ARTIST">
+<code class="descname">ARTIST</code><em class="property"> = 'artist'</em><a class="headerlink" href="#pandora.ResultType.ARTIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.ResultType.GENRE">
+<code class="descname">GENRE</code><em class="property"> = 'genre'</em><a class="headerlink" href="#pandora.ResultType.GENRE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.ResultType.TRACK">
+<code class="descname">TRACK</code><em class="property"> = 'track'</em><a class="headerlink" href="#pandora.ResultType.TRACK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.SearchResult">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">SearchResult</code><span class="sig-paren">(</span><em>result: dict</em>, <em>query: str</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#SearchResult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.SearchResult" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search result as returned from client.search.</p>
+<p>Endpoint(s): v1/search/fullSearch</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.SearchType">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">SearchType</code><a class="reference internal" href="_modules/pandora.html#SearchType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.SearchType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supported search types</p>
+<dl class="attribute">
+<dt id="pandora.SearchType.ALL">
+<code class="descname">ALL</code><em class="property"> = 'all'</em><a class="headerlink" href="#pandora.SearchType.ALL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.SearchType.ARTIST">
+<code class="descname">ARTIST</code><em class="property"> = 'artist'</em><a class="headerlink" href="#pandora.SearchType.ARTIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.SearchType.TRACK">
+<code class="descname">TRACK</code><em class="property"> = 'track'</em><a class="headerlink" href="#pandora.SearchType.TRACK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.SimilarArtist">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">SimilarArtist</code><span class="sig-paren">(</span><em>similar: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#SimilarArtist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.SimilarArtist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Artist info similar artist</p>
+<p>Base class: ArtistBase</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.Station">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">Station</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#Station"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Station" title="Permalink to this definition">¶</a></dt>
+<dd><p>Station as returned from client.get_stations.</p>
+<p>Endpoint(s): v1/station/getStations</p>
+<p>Base class: StationBase</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.StationBase">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">StationBase</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#StationBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.StationBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class for most Station like objects.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.StationInfo">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">StationInfo</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#StationInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.StationInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Station info as returned from client.get_station_info.</p>
+<p>Endpoint(s): v1/station/getStationDetails</p>
+<p>Base class: StationBase</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.StationRecommendation">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">StationRecommendation</code><span class="sig-paren">(</span><em>rec: dict</em>, <em>rec_type: pandora.RecommendationType</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#StationRecommendation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.StationRecommendation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Station recommendation as returned from client.get_station_recommendations.</p>
+<p>Endpoint(s): v1/search/getStationRecommendations</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.StationSeed">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">StationSeed</code><span class="sig-paren">(</span><em>seed: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#StationSeed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.StationSeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Station info station seed</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.StationSeedSuggestion">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">StationSeedSuggestion</code><span class="sig-paren">(</span><em>seed: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#StationSeedSuggestion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.StationSeedSuggestion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Station seed suggestion as returned from client.get_station_seed_suggestions.</p>
+<p>Endpoint(s): v1/search/getSeedSuggestions</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.StationSeedType">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">StationSeedType</code><a class="reference internal" href="_modules/pandora.html#StationSeedType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.StationSeedType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Station seed types</p>
+<dl class="attribute">
+<dt id="pandora.StationSeedType.ARTIST">
+<code class="descname">ARTIST</code><em class="property"> = 1</em><a class="headerlink" href="#pandora.StationSeedType.ARTIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.StationSeedType.GENRE">
+<code class="descname">GENRE</code><em class="property"> = 2</em><a class="headerlink" href="#pandora.StationSeedType.GENRE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.StationSeedType.TRACK">
+<code class="descname">TRACK</code><em class="property"> = 0</em><a class="headerlink" href="#pandora.StationSeedType.TRACK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.Track">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">Track</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#Track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.Track" title="Permalink to this definition">¶</a></dt>
+<dd><p>A playlist track as returned from client.get_playlist_fragment or client.get_replay_track.</p>
+<p>Endpoint(s): v1/playlist/getFragment, v1/ondemand/getReplayTrack</p>
+<p>Base class: TrackBase</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.TrackBase">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">TrackBase</code><span class="sig-paren">(</span><em>data: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#TrackBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.TrackBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class for all Track like objects.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.TrackInfo">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">TrackInfo</code><span class="sig-paren">(</span><em>info: dict</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/pandora.html#TrackInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.TrackInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Track info as returned from client.get_track_info</p>
+<p>Endpoint(s): v1/music/track</p>
+<p>Base class: TrackBase</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pandora.TrackRating">
+<em class="property">class </em><code class="descclassname">pandora.</code><code class="descname">TrackRating</code><a class="reference internal" href="_modules/pandora.html#TrackRating"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pandora.TrackRating" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pandora Track Ratings</p>
+<dl class="attribute">
+<dt id="pandora.TrackRating.BANNED">
+<code class="descname">BANNED</code><em class="property"> = 2</em><a class="headerlink" href="#pandora.TrackRating.BANNED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.TrackRating.LOVED">
+<code class="descname">LOVED</code><em class="property"> = 1</em><a class="headerlink" href="#pandora.TrackRating.LOVED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pandora.TrackRating.NONE">
+<code class="descname">NONE</code><em class="property"> = 0</em><a class="headerlink" href="#pandora.TrackRating.NONE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-soupy">
+<span id="soup"></span><h2>Soup<a class="headerlink" href="#module-soupy" title="Permalink to this headline">¶</a></h2>
+<p>Provides slightly more pythonic bindings to libsoup</p>
+<p>The exact behavior is largely tailored to usage within Pithos.</p>
+<dl class="class">
+<dt id="soupy.Message">
+<em class="property">class </em><code class="descclassname">soupy.</code><code class="descname">Message</code><span class="sig-paren">(</span><em>message: gi.repository.Soup.Message</em>, <em>request: bool = False</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/soupy.html#Message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soupy.Message" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="soupy.Message.body">
+<code class="descname">body</code><a class="headerlink" href="#soupy.Message.body" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns raw un-encoded bytes from response</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="soupy.Message.do_get_property">
+<code class="descname">do_get_property</code><span class="sig-paren">(</span><em>pspec</em><span class="sig-paren">)</span><a class="headerlink" href="#soupy.Message.do_get_property" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="soupy.Message.do_set_property">
+<code class="descname">do_set_property</code><span class="sig-paren">(</span><em>pspec</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#soupy.Message.do_set_property" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="soupy.Message.headers">
+<code class="descname">headers</code><a class="headerlink" href="#soupy.Message.headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>The message request headers</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="soupy.Message.json_body">
+<code class="descname">json_body</code><a class="headerlink" href="#soupy.Message.json_body" title="Permalink to this definition">¶</a></dt>
+<dd><p>The decoded message body</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="soupy.Message.new_for_uri">
+<em class="property">classmethod </em><code class="descname">new_for_uri</code><span class="sig-paren">(</span><em>uri</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soupy.html#Message.new_for_uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soupy.Message.new_for_uri" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="soupy.Session">
+<em class="property">class </em><code class="descclassname">soupy.</code><code class="descname">Session</code><a class="reference internal" href="_modules/soupy.html#Session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soupy.Session" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="soupy.Session.cookies">
+<code class="descname">cookies</code><a class="headerlink" href="#soupy.Session.cookies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cookies saved in the session</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="soupy.Session.do_get_property">
+<code class="descname">do_get_property</code><span class="sig-paren">(</span><em>pspec</em><span class="sig-paren">)</span><a class="headerlink" href="#soupy.Session.do_get_property" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="soupy.Session.do_set_property">
+<code class="descname">do_set_property</code><span class="sig-paren">(</span><em>pspec</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#soupy.Session.do_set_property" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="soupy.Session.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>uri</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soupy.html#Session.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soupy.Session.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends an HTTP GET request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uri</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – URI to send request to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#soupy.Message" title="soupy.Message"><code class="xref py py-class docutils literal"><span class="pre">Message</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="soupy.Session.head">
+<code class="descname">head</code><span class="sig-paren">(</span><em>uri</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soupy.html#Session.head"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soupy.Session.head" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends HTTP HEAD request. Cookies in response are saved to session</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uri</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – URI to send request to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#soupy.Message" title="soupy.Message"><code class="xref py py-class docutils literal"><span class="pre">Message</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="soupy.Session.parsed_proxy">
+<code class="descname">parsed_proxy</code><a class="headerlink" href="#soupy.Session.parsed_proxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Proxy to be used by the session, parsed</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="soupy.Session.post">
+<code class="descname">post</code><span class="sig-paren">(</span><em>uri</em>, <em>json_body=None</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/soupy.html#Session.post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soupy.Session.post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends HTTP POST request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>uri</strong> (<code class="xref py py-class docutils literal"><span class="pre">str</span></code>) – URI to send request to.</li>
+<li><strong>json_body</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">dict</span></code>]) – Body to send, converted to JSON encoded in UTF-8.</li>
+<li><strong>headers</strong> (<code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">dict</span></code>]) – Headers to send.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#soupy.Message" title="soupy.Message"><code class="xref py py-class docutils literal"><span class="pre">Message</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="soupy.Session.proxy">
+<code class="descname">proxy</code><a class="headerlink" href="#soupy.Session.proxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Proxy to be used by the session.</p>
+<p>SOCKS (4/5) and HTTP are currently supported.</p>
+<p>An empty string means disabled (respect system default).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="soupy.SoupException">
+<em class="property">exception </em><code class="descclassname">soupy.</code><code class="descname">SoupException</code><span class="sig-paren">(</span><em>message</em>, <em>error_code</em>, <em>error_message</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/soupy.html#SoupException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soupy.SoupException" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="classmethod">
+<dt id="soupy.SoupException.new_from_message">
+<em class="property">classmethod </em><code class="descname">new_from_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/soupy.html#SoupException.new_from_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#soupy.SoupException.new_from_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Patrick Griffis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

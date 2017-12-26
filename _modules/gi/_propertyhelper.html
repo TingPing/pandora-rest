@@ -1,0 +1,647 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>gi._propertyhelper &mdash; Pithos 2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="Pithos 2.0 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Pithos
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Pithos</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>gi._propertyhelper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gi._propertyhelper</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- Mode: Python; py-indent-offset: 4 -*-</span>
+<span class="c1"># pygobject - Python bindings for the GObject library</span>
+<span class="c1"># Copyright (C) 2007 Johan Dahlin</span>
+<span class="c1">#</span>
+<span class="c1">#   gi/_propertyhelper.py: GObject property wrapper/helper</span>
+<span class="c1">#</span>
+<span class="c1"># This library is free software; you can redistribute it and/or</span>
+<span class="c1"># modify it under the terms of the GNU Lesser General Public</span>
+<span class="c1"># License as published by the Free Software Foundation; either</span>
+<span class="c1"># version 2.1 of the License, or (at your option) any later version.</span>
+<span class="c1">#</span>
+<span class="c1"># This library is distributed in the hope that it will be useful,</span>
+<span class="c1"># but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="c1"># MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU</span>
+<span class="c1"># Lesser General Public License for more details.</span>
+<span class="c1">#</span>
+<span class="c1"># You should have received a copy of the GNU Lesser General Public</span>
+<span class="c1"># License along with this library; if not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_gi</span>
+
+<span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> \
+    <span class="n">TYPE_NONE</span><span class="p">,</span> <span class="n">TYPE_INTERFACE</span><span class="p">,</span> <span class="n">TYPE_CHAR</span><span class="p">,</span> <span class="n">TYPE_UCHAR</span><span class="p">,</span> \
+    <span class="n">TYPE_BOOLEAN</span><span class="p">,</span> <span class="n">TYPE_INT</span><span class="p">,</span> <span class="n">TYPE_UINT</span><span class="p">,</span> <span class="n">TYPE_LONG</span><span class="p">,</span> \
+    <span class="n">TYPE_ULONG</span><span class="p">,</span> <span class="n">TYPE_INT64</span><span class="p">,</span> <span class="n">TYPE_UINT64</span><span class="p">,</span> <span class="n">TYPE_ENUM</span><span class="p">,</span> <span class="n">TYPE_FLAGS</span><span class="p">,</span> \
+    <span class="n">TYPE_FLOAT</span><span class="p">,</span> <span class="n">TYPE_DOUBLE</span><span class="p">,</span> <span class="n">TYPE_STRING</span><span class="p">,</span> \
+    <span class="n">TYPE_POINTER</span><span class="p">,</span> <span class="n">TYPE_BOXED</span><span class="p">,</span> <span class="n">TYPE_PARAM</span><span class="p">,</span> <span class="n">TYPE_OBJECT</span><span class="p">,</span> \
+    <span class="n">TYPE_PYOBJECT</span><span class="p">,</span> <span class="n">TYPE_GTYPE</span><span class="p">,</span> <span class="n">TYPE_STRV</span><span class="p">,</span> <span class="n">TYPE_VARIANT</span>
+
+<span class="n">G_MAXFLOAT</span> <span class="o">=</span> <span class="n">_gi</span><span class="o">.</span><span class="n">G_MAXFLOAT</span>
+<span class="n">G_MAXDOUBLE</span> <span class="o">=</span> <span class="n">_gi</span><span class="o">.</span><span class="n">G_MAXDOUBLE</span>
+<span class="n">G_MININT</span> <span class="o">=</span> <span class="n">_gi</span><span class="o">.</span><span class="n">G_MININT</span>
+<span class="n">G_MAXINT</span> <span class="o">=</span> <span class="n">_gi</span><span class="o">.</span><span class="n">G_MAXINT</span>
+<span class="n">G_MAXUINT</span> <span class="o">=</span> <span class="n">_gi</span><span class="o">.</span><span class="n">G_MAXUINT</span>
+<span class="n">G_MINLONG</span> <span class="o">=</span> <span class="n">_gi</span><span class="o">.</span><span class="n">G_MINLONG</span>
+<span class="n">G_MAXLONG</span> <span class="o">=</span> <span class="n">_gi</span><span class="o">.</span><span class="n">G_MAXLONG</span>
+<span class="n">G_MAXULONG</span> <span class="o">=</span> <span class="n">_gi</span><span class="o">.</span><span class="n">G_MAXULONG</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="n">_basestring</span> <span class="o">=</span> <span class="nb">str</span>
+    <span class="n">_long</span> <span class="o">=</span> <span class="nb">int</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_basestring</span> <span class="o">=</span> <span class="n">basestring</span>
+    <span class="n">_long</span> <span class="o">=</span> <span class="n">long</span>
+
+
+<span class="k">class</span> <span class="nc">Property</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Creates a new Property which when used in conjunction with</span>
+<span class="sd">    GObject subclass will create a Python property accessor for the</span>
+<span class="sd">    GObject ParamSpec.</span>
+
+<span class="sd">    :param callable getter:</span>
+<span class="sd">        getter to get the value of the property</span>
+<span class="sd">    :param callable setter:</span>
+<span class="sd">        setter to set the value of the property</span>
+<span class="sd">    :param type type:</span>
+<span class="sd">        type of property</span>
+<span class="sd">    :param default:</span>
+<span class="sd">        default value, must match the property type.</span>
+<span class="sd">    :param str nick:</span>
+<span class="sd">        short description</span>
+<span class="sd">    :param str blurb:</span>
+<span class="sd">        long description</span>
+<span class="sd">    :param GObject.ParamFlags flags:</span>
+<span class="sd">        parameter flags</span>
+<span class="sd">    :keyword minimum:</span>
+<span class="sd">        minimum allowed value (int, float, long only)</span>
+<span class="sd">    :keyword maximum:</span>
+<span class="sd">        maximum allowed value (int, float, long only)</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">         class MyObject(GObject.Object):</span>
+<span class="sd">             prop = GObject.Property(type=str)</span>
+
+<span class="sd">         obj = MyObject()</span>
+<span class="sd">         obj.prop = &#39;value&#39;</span>
+
+<span class="sd">         obj.prop  # now is &#39;value&#39;</span>
+
+<span class="sd">    The API is similar to the builtin :py:func:`property`:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class AnotherObject(GObject.Object):</span>
+<span class="sd">            value = 0</span>
+
+<span class="sd">            @GObject.Property</span>
+<span class="sd">            def prop(self):</span>
+<span class="sd">                &#39;Read only property.&#39;</span>
+<span class="sd">                return 1</span>
+
+<span class="sd">            @GObject.Property(type=int)</span>
+<span class="sd">            def propInt(self):</span>
+<span class="sd">                &#39;Read-write integer property.&#39;</span>
+<span class="sd">                return self.value</span>
+
+<span class="sd">            @propInt.setter</span>
+<span class="sd">            def propInt(self, value):</span>
+<span class="sd">                self.value = value</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_type_from_pytype_lookup</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c1"># Put long_ first in case long_ and int are the same so int clobbers long_</span>
+        <span class="n">_long</span><span class="p">:</span> <span class="n">TYPE_LONG</span><span class="p">,</span>
+        <span class="nb">int</span><span class="p">:</span> <span class="n">TYPE_INT</span><span class="p">,</span>
+        <span class="nb">bool</span><span class="p">:</span> <span class="n">TYPE_BOOLEAN</span><span class="p">,</span>
+        <span class="nb">float</span><span class="p">:</span> <span class="n">TYPE_DOUBLE</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">:</span> <span class="n">TYPE_STRING</span><span class="p">,</span>
+        <span class="nb">object</span><span class="p">:</span> <span class="n">TYPE_PYOBJECT</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">_min_value_lookup</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">TYPE_UINT</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">TYPE_ULONG</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">TYPE_UINT64</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="c1"># Remember that G_MINFLOAT and G_MINDOUBLE are something different.</span>
+        <span class="n">TYPE_FLOAT</span><span class="p">:</span> <span class="o">-</span><span class="n">G_MAXFLOAT</span><span class="p">,</span>
+        <span class="n">TYPE_DOUBLE</span><span class="p">:</span> <span class="o">-</span><span class="n">G_MAXDOUBLE</span><span class="p">,</span>
+        <span class="n">TYPE_INT</span><span class="p">:</span> <span class="n">G_MININT</span><span class="p">,</span>
+        <span class="n">TYPE_LONG</span><span class="p">:</span> <span class="n">G_MINLONG</span><span class="p">,</span>
+        <span class="n">TYPE_INT64</span><span class="p">:</span> <span class="o">-</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">63</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">_max_value_lookup</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">TYPE_UINT</span><span class="p">:</span> <span class="n">G_MAXUINT</span><span class="p">,</span>
+        <span class="n">TYPE_ULONG</span><span class="p">:</span> <span class="n">G_MAXULONG</span><span class="p">,</span>
+        <span class="n">TYPE_INT64</span><span class="p">:</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">63</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">TYPE_UINT64</span><span class="p">:</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">64</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">TYPE_FLOAT</span><span class="p">:</span> <span class="n">G_MAXFLOAT</span><span class="p">,</span>
+        <span class="n">TYPE_DOUBLE</span><span class="p">:</span> <span class="n">G_MAXDOUBLE</span><span class="p">,</span>
+        <span class="n">TYPE_INT</span><span class="p">:</span> <span class="n">G_MAXINT</span><span class="p">,</span>
+        <span class="n">TYPE_LONG</span><span class="p">:</span> <span class="n">G_MAXLONG</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">_default_lookup</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">TYPE_INT</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">TYPE_UINT</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">TYPE_LONG</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">TYPE_ULONG</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">TYPE_INT64</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">TYPE_UINT64</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">TYPE_STRING</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="n">TYPE_FLOAT</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">TYPE_DOUBLE</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">class</span> <span class="nc">__metaclass__</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;&lt;class &#39;GObject.Property&#39;&gt;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">getter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">nick</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">blurb</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">_gi</span><span class="o">.</span><span class="n">PARAM_READWRITE</span><span class="p">,</span>
+                 <span class="n">minimum</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">type</span> <span class="o">=</span> <span class="nb">object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_from_python</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_default</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_default</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nick</span><span class="p">,</span> <span class="n">_basestring</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;nick must be a string&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nick</span> <span class="o">=</span> <span class="n">nick</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">blurb</span><span class="p">,</span> <span class="n">_basestring</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;blurb must be a string&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blurb</span> <span class="o">=</span> <span class="n">blurb</span>
+        <span class="c1"># Always clobber __doc__ with blurb even if blurb is empty because</span>
+        <span class="c1"># we don&#39;t want the lengthy Property class documentation showing up</span>
+        <span class="c1"># on instances.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">blurb</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">flags</span>
+
+        <span class="c1"># Call after setting blurb for potential __doc__ usage.</span>
+        <span class="k">if</span> <span class="n">getter</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">setter</span><span class="p">:</span>
+            <span class="n">setter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_readonly_setter</span>
+        <span class="k">elif</span> <span class="n">setter</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">getter</span><span class="p">:</span>
+            <span class="n">getter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writeonly_getter</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">setter</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">getter</span><span class="p">:</span>
+            <span class="n">getter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_getter</span>
+            <span class="n">setter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_setter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getter</span><span class="p">(</span><span class="n">getter</span><span class="p">)</span>
+        <span class="c1"># do not call self.setter() here, as this defines the property name</span>
+        <span class="c1"># already</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fset</span> <span class="o">=</span> <span class="n">setter</span>
+
+        <span class="k">if</span> <span class="n">minimum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">minimum</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_minimum</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Minimum for type </span><span class="si">%s</span><span class="s2"> cannot be lower than </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_minimum</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">minimum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_minimum</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">=</span> <span class="n">minimum</span>
+        <span class="k">if</span> <span class="n">maximum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">maximum</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_maximum</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;Maximum for type </span><span class="si">%s</span><span class="s2"> cannot be higher than </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_maximum</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">maximum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_maximum</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">=</span> <span class="n">maximum</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;GObject Property </span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">)&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="s1">&#39;(uninitialized)&#39;</span><span class="p">,</span>
+            <span class="n">_gi</span><span class="o">.</span><span class="n">type_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">klass</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Simply return the result of fget directly, no need to go through GObject.</span>
+        <span class="c1"># See: https://bugzilla.gnome.org/show_bug.cgi?id=723872</span>
+        <span class="c1"># We catch and print any exception occurring within the fget for compatibility</span>
+        <span class="c1"># prior to the fast path addition from bug 723872, this should eventually</span>
+        <span class="c1"># be removed and exceptions raised directly to the caller as in:</span>
+        <span class="c1"># https://bugzilla.gnome.org/show_bug.cgi?id=575652</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fget</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span><span class="p">:</span>
+            <span class="n">exc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">raise</span> <span class="n">exc</span>
+
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">set_property</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span><span class="p">:</span>
+            <span class="n">exc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">raise</span> <span class="n">exc</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Allows application of the getter along with init arguments.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getter</span><span class="p">(</span><span class="n">fget</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fget</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the getter function to fget. For use as a decorator.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">fget</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">:</span>
+            <span class="c1"># Always clobber docstring and blurb with the getter docstring.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blurb</span> <span class="o">=</span> <span class="n">fget</span><span class="o">.</span><span class="vm">__doc__</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">fget</span><span class="o">.</span><span class="vm">__doc__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fget</span> <span class="o">=</span> <span class="n">fget</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the setter function to fset. For use as a decorator.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fset</span> <span class="o">=</span> <span class="n">fset</span>
+        <span class="c1"># with a setter decorator, we must ignore the name of the method in</span>
+        <span class="c1"># install_properties, as this does not need to be a valid property name</span>
+        <span class="c1"># and does not define the property name. So set the name here.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fget</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">_type_from_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">type_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_from_pytype_lookup</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_from_pytype_lookup</span><span class="p">[</span><span class="n">type_</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span>
+              <span class="nb">issubclass</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="p">(</span><span class="n">_gi</span><span class="o">.</span><span class="n">GObject</span><span class="p">,</span>
+                                 <span class="n">_gi</span><span class="o">.</span><span class="n">GEnum</span><span class="p">,</span>
+                                 <span class="n">_gi</span><span class="o">.</span><span class="n">GFlags</span><span class="p">,</span>
+                                 <span class="n">_gi</span><span class="o">.</span><span class="n">GBoxed</span><span class="p">,</span>
+                                 <span class="n">_gi</span><span class="o">.</span><span class="n">GInterface</span><span class="p">))):</span>
+            <span class="k">return</span> <span class="n">type_</span><span class="o">.</span><span class="n">__gtype__</span>
+        <span class="k">elif</span> <span class="n">type_</span> <span class="ow">in</span> <span class="p">(</span><span class="n">TYPE_NONE</span><span class="p">,</span> <span class="n">TYPE_INTERFACE</span><span class="p">,</span> <span class="n">TYPE_CHAR</span><span class="p">,</span> <span class="n">TYPE_UCHAR</span><span class="p">,</span>
+                       <span class="n">TYPE_INT</span><span class="p">,</span> <span class="n">TYPE_UINT</span><span class="p">,</span> <span class="n">TYPE_BOOLEAN</span><span class="p">,</span> <span class="n">TYPE_LONG</span><span class="p">,</span>
+                       <span class="n">TYPE_ULONG</span><span class="p">,</span> <span class="n">TYPE_INT64</span><span class="p">,</span> <span class="n">TYPE_UINT64</span><span class="p">,</span>
+                       <span class="n">TYPE_FLOAT</span><span class="p">,</span> <span class="n">TYPE_DOUBLE</span><span class="p">,</span> <span class="n">TYPE_POINTER</span><span class="p">,</span>
+                       <span class="n">TYPE_BOXED</span><span class="p">,</span> <span class="n">TYPE_PARAM</span><span class="p">,</span> <span class="n">TYPE_OBJECT</span><span class="p">,</span> <span class="n">TYPE_STRING</span><span class="p">,</span>
+                       <span class="n">TYPE_PYOBJECT</span><span class="p">,</span> <span class="n">TYPE_GTYPE</span><span class="p">,</span> <span class="n">TYPE_STRV</span><span class="p">,</span> <span class="n">TYPE_VARIANT</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">type_</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Unsupported type: </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">type_</span><span class="p">,))</span>
+
+    <span class="k">def</span> <span class="nf">_get_default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_lookup</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ptype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ptype</span> <span class="o">==</span> <span class="n">TYPE_BOOLEAN</span> <span class="ow">and</span> <span class="p">(</span><span class="n">default</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">))):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;default must be True or False, not </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">default</span><span class="p">,))</span>
+        <span class="k">elif</span> <span class="n">ptype</span> <span class="o">==</span> <span class="n">TYPE_PYOBJECT</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;object types does not have default values&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ptype</span> <span class="o">==</span> <span class="n">TYPE_GTYPE</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;GType types does not have default values&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">_gi</span><span class="o">.</span><span class="n">type_is_a</span><span class="p">(</span><span class="n">ptype</span><span class="p">,</span> <span class="n">TYPE_ENUM</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;enum properties needs a default value&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">_gi</span><span class="o">.</span><span class="n">type_is_a</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">ptype</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;enum value </span><span class="si">%s</span><span class="s2"> must be an instance of </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span>
+                                <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">ptype</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">_gi</span><span class="o">.</span><span class="n">type_is_a</span><span class="p">(</span><span class="n">ptype</span><span class="p">,</span> <span class="n">TYPE_FLAGS</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_gi</span><span class="o">.</span><span class="n">type_is_a</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">ptype</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;flags value </span><span class="si">%s</span><span class="s2"> must be an instance of </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span>
+                                <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">ptype</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">_gi</span><span class="o">.</span><span class="n">type_is_a</span><span class="p">(</span><span class="n">ptype</span><span class="p">,</span> <span class="n">TYPE_STRV</span><span class="p">)</span> <span class="ow">and</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Strv value </span><span class="si">%s</span><span class="s2"> must be a list&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">default</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">default</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Strv value </span><span class="si">%s</span><span class="s2"> must contain only strings&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">default</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">_gi</span><span class="o">.</span><span class="n">type_is_a</span><span class="p">(</span><span class="n">ptype</span><span class="p">,</span> <span class="n">TYPE_VARIANT</span><span class="p">)</span> <span class="ow">and</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="s1">&#39;__gtype__&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">_gi</span><span class="o">.</span><span class="n">type_is_a</span><span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">TYPE_VARIANT</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;variant value </span><span class="si">%s</span><span class="s2"> must be an instance of </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span>
+                                <span class="p">(</span><span class="n">default</span><span class="p">,</span> <span class="n">ptype</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_minimum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_value_lookup</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_maximum</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_value_lookup</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Getter and Setter</span>
+    <span class="c1">#</span>
+
+    <span class="k">def</span> <span class="nf">_default_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s1">&#39;_property_helper_&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_default_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s1">&#39;_property_helper_&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_readonly_setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> property of </span><span class="si">%s</span><span class="s2"> is read-only&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_writeonly_getter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> property of </span><span class="si">%s</span><span class="s2"> is write-only&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Public API</span>
+    <span class="c1">#</span>
+
+    <span class="k">def</span> <span class="nf">get_pspec_args</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ptype</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span>
+        <span class="k">if</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">TYPE_INT</span><span class="p">,</span> <span class="n">TYPE_UINT</span><span class="p">,</span> <span class="n">TYPE_LONG</span><span class="p">,</span> <span class="n">TYPE_ULONG</span><span class="p">,</span>
+                     <span class="n">TYPE_INT64</span><span class="p">,</span> <span class="n">TYPE_UINT64</span><span class="p">,</span> <span class="n">TYPE_FLOAT</span><span class="p">,</span> <span class="n">TYPE_DOUBLE</span><span class="p">):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">ptype</span> <span class="o">==</span> <span class="n">TYPE_STRING</span> <span class="ow">or</span> <span class="n">ptype</span> <span class="o">==</span> <span class="n">TYPE_BOOLEAN</span> <span class="ow">or</span>
+              <span class="n">ptype</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="n">TYPE_ENUM</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ptype</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="n">TYPE_FLAGS</span><span class="p">)</span> <span class="ow">or</span>
+              <span class="n">ptype</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="n">TYPE_VARIANT</span><span class="p">)):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">default</span><span class="p">,)</span>
+        <span class="k">elif</span> <span class="n">ptype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">TYPE_PYOBJECT</span><span class="p">,</span> <span class="n">TYPE_GTYPE</span><span class="p">):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="k">elif</span> <span class="n">ptype</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="n">TYPE_OBJECT</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ptype</span><span class="o">.</span><span class="n">is_a</span><span class="p">(</span><span class="n">TYPE_BOXED</span><span class="p">):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">ptype</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nick</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blurb</span><span class="p">)</span> <span class="o">+</span> <span class="n">args</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">,)</span>
+
+
+<span class="k">def</span> <span class="nf">install_properties</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scans the given class for instances of Property and merges them</span>
+<span class="sd">    into the classes __gproperties__ dict if it exists or adds it if not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gproperties</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;__gproperties__&#39;</span><span class="p">,</span> <span class="p">{})</span>
+
+    <span class="n">props</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="n">Property</span><span class="p">):</span>  <span class="c1"># not same as the built-in</span>
+            <span class="c1"># if a property was defined with a decorator, it may already have</span>
+            <span class="c1"># a name; if it was defined with an assignment (prop = Property(...))</span>
+            <span class="c1"># we set the property&#39;s name to the member name</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">prop</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="n">prop</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="c1"># we will encounter the same property multiple times in case of</span>
+            <span class="c1"># custom setter methods</span>
+            <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">gproperties</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">gproperties</span><span class="p">[</span><span class="n">prop</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">==</span> <span class="n">prop</span><span class="o">.</span><span class="n">get_pspec_args</span><span class="p">():</span>
+                    <span class="k">continue</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Property </span><span class="si">%s</span><span class="s1"> was already found in __gproperties__&#39;</span> <span class="o">%</span> <span class="n">prop</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">gproperties</span><span class="p">[</span><span class="n">prop</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop</span><span class="o">.</span><span class="n">get_pspec_args</span><span class="p">()</span>
+            <span class="n">props</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">props</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="bp">cls</span><span class="o">.</span><span class="n">__gproperties__</span> <span class="o">=</span> <span class="n">gproperties</span>
+
+    <span class="k">if</span> <span class="s1">&#39;do_get_property&#39;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span> <span class="ow">or</span> <span class="s1">&#39;do_set_property&#39;</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">prop</span> <span class="ow">in</span> <span class="n">props</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">fget</span> <span class="o">!=</span> <span class="n">prop</span><span class="o">.</span><span class="n">_default_getter</span> <span class="ow">or</span> <span class="n">prop</span><span class="o">.</span><span class="n">fset</span> <span class="o">!=</span> <span class="n">prop</span><span class="o">.</span><span class="n">_default_setter</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="s2">&quot;GObject subclass </span><span class="si">%r</span><span class="s2"> defines do_get/set_property&quot;</span>
+                    <span class="s2">&quot; and it also uses a property with a custom setter&quot;</span>
+                    <span class="s2">&quot; or getter. This is not allowed&quot;</span> <span class="o">%</span>
+                    <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,))</span>
+
+    <span class="k">def</span> <span class="nf">obj_get_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pspec</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">pspec</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">do_get_property</span> <span class="o">=</span> <span class="n">obj_get_property</span>
+
+    <span class="k">def</span> <span class="nf">obj_set_property</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pspec</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">pspec</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prop</span><span class="p">:</span>
+            <span class="n">prop</span><span class="o">.</span><span class="n">fset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">do_set_property</span> <span class="o">=</span> <span class="n">obj_set_property</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Patrick Griffis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

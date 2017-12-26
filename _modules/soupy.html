@@ -1,0 +1,463 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>soupy &mdash; Pithos 2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Pithos 2.0 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Pithos
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Pithos</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>soupy</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for soupy</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provides slightly more pythonic bindings to libsoup</span>
+
+<span class="sd">The exact behavior is largely tailored to usage within Pithos.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">__license__</span> <span class="o">=</span> <span class="s1">&#39;GPL-3.0+&#39;</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">gi</span>
+<span class="n">gi</span><span class="o">.</span><span class="n">require_version</span><span class="p">(</span><span class="s1">&#39;Soup&#39;</span><span class="p">,</span> <span class="s1">&#39;2.4&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gi.repository</span> <span class="k">import</span> <span class="n">GObject</span><span class="p">,</span> <span class="n">Gio</span><span class="p">,</span> <span class="n">Soup</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="n">SUPPORTED_PROXY_PROTOCOLS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;socks://&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;socks4://&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;socks5://&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;http://&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;https://&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="SoupException"><a class="viewcode-back" href="../index.html#soupy.SoupException">[docs]</a><span class="k">class</span> <span class="nc">SoupException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">error_code</span><span class="p">,</span> <span class="n">error_message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error_code</span> <span class="o">=</span> <span class="n">error_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error_message</span> <span class="o">=</span> <span class="n">error_message</span>
+
+<div class="viewcode-block" id="SoupException.new_from_message"><a class="viewcode-back" href="../index.html#soupy.SoupException.new_from_message">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">new_from_message</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">soup_message</span><span class="p">:</span> <span class="n">Soup</span><span class="o">.</span><span class="n">Message</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">soup_message</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">response_body_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;message&#39;</span><span class="p">]</span>
+            <span class="n">error_code</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;errorCode&#39;</span><span class="p">]</span>
+            <span class="n">error_message</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;errorString&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;HTTP Error&#39;</span>
+            <span class="n">error_code</span> <span class="o">=</span> <span class="n">soup_message</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">status_code</span>
+            <span class="n">error_message</span> <span class="o">=</span> <span class="n">Soup</span><span class="o">.</span><span class="n">Status</span><span class="p">(</span><span class="n">error_code</span><span class="p">)</span><span class="o">.</span><span class="n">value_name</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">error_code</span><span class="p">,</span> <span class="n">error_message</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">): </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">error_message</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Message"><a class="viewcode-back" href="../index.html#soupy.Message">[docs]</a><span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="n">GObject</span><span class="o">.</span><span class="n">Object</span><span class="p">):</span>
+    <span class="n">__gtype_name__</span> <span class="o">=</span> <span class="s1">&#39;Message&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Soup</span><span class="o">.</span><span class="n">Message</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_request</span> <span class="o">=</span> <span class="n">request</span>
+
+<div class="viewcode-block" id="Message.new_for_uri"><a class="viewcode-back" href="../index.html#soupy.Message.new_for_uri">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">new_for_uri</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">Soup</span><span class="o">.</span><span class="n">Message</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="nd">@GObject</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_PYOBJECT</span><span class="p">,</span>
+        <span class="n">nick</span><span class="o">=</span><span class="s1">&#39;headers prop&#39;</span><span class="p">,</span>
+        <span class="n">blurb</span><span class="o">=</span><span class="s1">&#39;The message request headers&#39;</span><span class="p">,</span>
+        <span class="n">flags</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">ParamFlags</span><span class="o">.</span><span class="n">READWRITE</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">request_headers</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">response_headers</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">headers</span><span class="o">.</span><span class="n">foreach</span><span class="p">(</span><span class="k">lambda</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">headers</span><span class="o">.</span><span class="n">get_list</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">s</span><span class="p">}</span>
+
+    <span class="nd">@headers</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">request_headers</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">headers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="s1">&#39;headers&#39;</span><span class="p">)</span>
+
+    <span class="nd">@GObject</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_PYOBJECT</span><span class="p">,</span>
+        <span class="n">nick</span><span class="o">=</span><span class="s1">&#39;json-body prop&#39;</span><span class="p">,</span>
+        <span class="n">blurb</span><span class="o">=</span><span class="s1">&#39;The decoded message body&#39;</span><span class="p">,</span>
+        <span class="n">flags</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">ParamFlags</span><span class="o">.</span><span class="n">READWRITE</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">json_body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span> <span class="k">if</span> <span class="n">data</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="nd">@json_body</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">json_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_body</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span> <span class="ow">is</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">set_request</span><span class="p">(</span><span class="s1">&#39;application/json;charset=utf-8&#39;</span><span class="p">,</span>
+                                  <span class="n">Soup</span><span class="o">.</span><span class="n">MemoryUse</span><span class="o">.</span><span class="n">COPY</span><span class="p">,</span>
+                                  <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_body</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="s1">&#39;json-body&#39;</span><span class="p">)</span>
+
+    <span class="nd">@GObject</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_PYOBJECT</span><span class="p">,</span>
+        <span class="n">nick</span><span class="o">=</span><span class="s1">&#39;body prop&#39;</span><span class="p">,</span>
+        <span class="n">blurb</span><span class="o">=</span><span class="s1">&#39;un-encoded bytes from response&#39;</span><span class="p">,</span>
+        <span class="n">flags</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">ParamFlags</span><span class="o">.</span><span class="n">READABLE</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns raw un-encoded bytes from response&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_request</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">request_body_data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">response_body_data</span>
+        <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">jb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_body</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">jb</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="k">if</span> <span class="n">jb</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">headers</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="k">if</span> <span class="n">headers</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">uri</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_message</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">uri</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Message &#39;</span><span class="si">{}</span><span class="s2">&#39;: &#39;</span><span class="si">{}</span><span class="s2">&#39; - &#39;</span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Session"><a class="viewcode-back" href="../index.html#soupy.Session">[docs]</a><span class="k">class</span> <span class="nc">Session</span><span class="p">(</span><span class="n">GObject</span><span class="o">.</span><span class="n">Object</span><span class="p">):</span>
+    <span class="n">__gtype_name__</span> <span class="o">=</span> <span class="s1">&#39;Session&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">Soup</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span> <span class="o">=</span> <span class="n">Soup</span><span class="o">.</span><span class="n">CookieJar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">add_feature</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Session.head"><a class="viewcode-back" href="../index.html#soupy.Session.head">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends HTTP HEAD request. Cookies in response are saved to session</span>
+
+<span class="sd">        :param uri: URI to send request to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="n">new_for_uri</span><span class="p">(</span><span class="s1">&#39;HEAD&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_cookies_from_response</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="Session.post"><a class="viewcode-back" href="../index.html#soupy.Session.post">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">json_body</span><span class="p">:</span> <span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sends HTTP POST request.</span>
+
+<span class="sd">        :param uri: URI to send request to.</span>
+<span class="sd">        :param json_body: Body to send, converted to JSON encoded in UTF-8.</span>
+<span class="sd">        :param headers: Headers to send.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="n">new_for_uri</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">headers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">message</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span>
+        <span class="k">if</span> <span class="n">json_body</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">message</span><span class="o">.</span><span class="n">json_body</span> <span class="o">=</span> <span class="n">json_body</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Session.get"><a class="viewcode-back" href="../index.html#soupy.Session.get">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Message</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Sends an HTTP GET request.</span>
+
+<span class="sd">        :param uri: URI to send request to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="n">Message</span><span class="o">.</span><span class="n">new_for_uri</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">uri</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">Message</span><span class="p">]:</span>
+        <span class="n">future</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Future</span><span class="p">()</span>  <span class="c1"># type: asyncio.Future</span>
+
+        <span class="k">def</span> <span class="nf">on_response</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">response_message</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">response_message</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="n">future</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">SoupException</span><span class="o">.</span><span class="n">new_from_message</span><span class="p">(</span><span class="n">response_message</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">future</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="n">response_message</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">queue_message</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">_message</span><span class="p">,</span> <span class="n">on_response</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">future</span>
+
+    <span class="nd">@GObject</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="n">nick</span><span class="o">=</span><span class="s1">&#39;proxy prop&#39;</span><span class="p">,</span>
+        <span class="n">blurb</span><span class="o">=</span><span class="s1">&#39;Proxy to be used by the session&#39;</span><span class="p">,</span>
+        <span class="n">flags</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">ParamFlags</span><span class="o">.</span><span class="n">READWRITE</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Proxy to be used by the session.</span>
+
+<span class="sd">        SOCKS (4/5) and HTTP are currently supported.</span>
+
+<span class="sd">        An empty string means disabled (respect system default).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">proxy_uri</span>
+        <span class="k">return</span> <span class="n">uri</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span> <span class="k">if</span> <span class="n">uri</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="nd">@GObject</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_PYOBJECT</span><span class="p">,</span>
+        <span class="n">nick</span><span class="o">=</span><span class="s1">&#39;parsed-proxy prop&#39;</span><span class="p">,</span>
+        <span class="n">blurb</span><span class="o">=</span><span class="s1">&#39;Proxy to be used by the session, parsed&#39;</span><span class="p">,</span>
+        <span class="n">flags</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">ParamFlags</span><span class="o">.</span><span class="n">READABLE</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">parsed_proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">proxy</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">proxy_uri</span>
+        <span class="k">if</span> <span class="n">uri</span><span class="p">:</span>
+            <span class="n">proxy</span><span class="p">[</span><span class="s1">&#39;scheme&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">get_scheme</span><span class="p">()</span>
+            <span class="n">proxy</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">get_user</span><span class="p">()</span>
+            <span class="n">proxy</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">get_password</span><span class="p">()</span>
+            <span class="n">proxy</span><span class="p">[</span><span class="s1">&#39;hostport&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">get_port</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">proxy</span>
+
+    <span class="nd">@proxy</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">proxy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proxy</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">proxy</span><span class="p">:</span>
+            <span class="c1"># Return to default state</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">proxy_resolver</span> <span class="o">=</span> <span class="n">Gio</span><span class="o">.</span><span class="n">ProxyResolver</span><span class="o">.</span><span class="n">get_default</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">proxy</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">SUPPORTED_PROXY_PROTOCOLS</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">SoupException</span><span class="p">(</span><span class="s1">&#39;Invalid proxy URI&#39;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">props</span><span class="o">.</span><span class="n">proxy_uri</span> <span class="o">=</span> <span class="n">Soup</span><span class="o">.</span><span class="n">URI</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">proxy</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="s1">&#39;proxy&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="s1">&#39;parsed-proxy&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_save_cookies_from_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">origin</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">cookies</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Set-Cookie&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="c1"># FIXME: libsoup bindings should accept None for uri</span>
+        <span class="n">cookie</span> <span class="o">=</span> <span class="n">Soup</span><span class="o">.</span><span class="n">Cookie</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">cookies</span><span class="p">,</span> <span class="n">Soup</span><span class="o">.</span><span class="n">URI</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">origin</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">cookie</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span><span class="o">.</span><span class="n">add_cookie</span><span class="p">(</span><span class="n">cookie</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="s1">&#39;cookies&#39;</span><span class="p">)</span>
+
+    <span class="nd">@GObject</span><span class="o">.</span><span class="n">Property</span><span class="p">(</span>
+        <span class="nb">type</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">TYPE_PYOBJECT</span><span class="p">,</span>
+        <span class="n">nick</span><span class="o">=</span><span class="s1">&#39;cookies prop&#39;</span><span class="p">,</span>
+        <span class="n">blurb</span><span class="o">=</span><span class="s1">&#39;Cookies saved in the session&#39;</span><span class="p">,</span>
+        <span class="n">flags</span><span class="o">=</span><span class="n">GObject</span><span class="o">.</span><span class="n">ParamFlags</span><span class="o">.</span><span class="n">READABLE</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">cookies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Cookies saved in the session&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">get_name</span><span class="p">():</span> <span class="n">c</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cookies</span><span class="o">.</span><span class="n">all_cookies</span><span class="p">()}</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Patrick Griffis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

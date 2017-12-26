@@ -1,0 +1,1197 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pandora &mdash; Pithos 2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="Pithos 2.0 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> Pithos
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Pithos</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>pandora</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pandora</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">soupy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">bisect</span> <span class="k">import</span> <span class="n">bisect_left</span>
+
+
+<div class="viewcode-block" id="AudioFormat"><a class="viewcode-back" href="../index.html#pandora.AudioFormat">[docs]</a><span class="k">class</span> <span class="nc">AudioFormat</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Supported formats to request&quot;&quot;&quot;</span>
+    <span class="n">MP3</span> <span class="o">=</span> <span class="s1">&#39;mp3&#39;</span>
+    <span class="n">MP3_HIFI</span> <span class="o">=</span> <span class="s1">&#39;mp3-hifi&#39;</span>
+    <span class="n">AACPLUS</span> <span class="o">=</span> <span class="s1">&#39;aacplus&#39;</span></div>
+
+
+<div class="viewcode-block" id="TrackRating"><a class="viewcode-back" href="../index.html#pandora.TrackRating">[docs]</a><span class="k">class</span> <span class="nc">TrackRating</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pandora Track Ratings&quot;&quot;&quot;</span>
+    <span class="n">NONE</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">LOVED</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">BANNED</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="SearchType"><a class="viewcode-back" href="../index.html#pandora.SearchType">[docs]</a><span class="k">class</span> <span class="nc">SearchType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Supported search types&quot;&quot;&quot;</span>
+    <span class="n">ALL</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
+    <span class="n">TRACK</span> <span class="o">=</span> <span class="s1">&#39;track&#39;</span>
+    <span class="n">ARTIST</span> <span class="o">=</span> <span class="s1">&#39;artist&#39;</span></div>
+
+
+<div class="viewcode-block" id="ResultType"><a class="viewcode-back" href="../index.html#pandora.ResultType">[docs]</a><span class="k">class</span> <span class="nc">ResultType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Search result types&quot;&quot;&quot;</span>
+    <span class="n">TRACK</span> <span class="o">=</span> <span class="s1">&#39;track&#39;</span>
+    <span class="n">ARTIST</span> <span class="o">=</span> <span class="s1">&#39;artist&#39;</span>
+    <span class="n">GENRE</span> <span class="o">=</span> <span class="s1">&#39;genre&#39;</span></div>
+
+
+<div class="viewcode-block" id="RecommendationType"><a class="viewcode-back" href="../index.html#pandora.RecommendationType">[docs]</a><span class="k">class</span> <span class="nc">RecommendationType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Station recommendation types&quot;&quot;&quot;</span>
+    <span class="n">GENRE</span> <span class="o">=</span> <span class="s1">&#39;genreStations&#39;</span>
+    <span class="n">ARTIST</span> <span class="o">=</span> <span class="s1">&#39;artists&#39;</span></div>
+
+
+<div class="viewcode-block" id="StationSeedType"><a class="viewcode-back" href="../index.html#pandora.StationSeedType">[docs]</a><span class="k">class</span> <span class="nc">StationSeedType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Station seed types&quot;&quot;&quot;</span>
+    <span class="n">TRACK</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ARTIST</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">GENRE</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="Art"><a class="viewcode-back" href="../index.html#pandora.Art">[docs]</a><span class="k">class</span> <span class="nc">Art</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Art in various sizes from 90 to 1080px.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">art</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_art</span> <span class="o">=</span> <span class="n">art</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_art</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+<div class="viewcode-block" id="Art.get_url_for_size"><a class="viewcode-back" href="../index.html#pandora.Art.get_url_for_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_url_for_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtains the Url of the art that is closest in size</span>
+<span class="sd">        to the desired size or an empty string if there is no art.</span>
+<span class="sd">        If two sizes are equally close to the desired size,</span>
+<span class="sd">        return the larger of the two size&#39;s Url.</span>
+
+<span class="sd">        :param size: desired size in px</span>
+<span class="sd">        :returns: art Url or empty string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_art</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sizes</span><span class="p">:</span>
+            <span class="n">closest</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">bisect_left</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes</span><span class="p">):</span>
+                <span class="n">closest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sizes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">closest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sizes</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_art</span><span class="p">[</span><span class="n">closest</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Art &#39;</span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_url_for_size</span><span class="p">(</span><span class="mi">90</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="TrackBase"><a class="viewcode-back" href="../index.html#pandora.TrackBase">[docs]</a><span class="k">class</span> <span class="nc">TrackBase</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The base class for all Track like objects.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">music_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;musicId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;songTitle&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">album_title</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;albumTitle&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;artistName&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">album_seo_token</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;albumSeoToken&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_seo_token</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;artistSeoToken&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_seo_token</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;trackSeoToken&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pandora_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;pandoraId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amazon_url</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;amazonUrl&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;trackLength&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;albumArt&#39;</span><span class="p">,</span> <span class="p">[])})</span></div>
+
+
+<div class="viewcode-block" id="ArtistBase"><a class="viewcode-back" href="../index.html#pandora.ArtistBase">[docs]</a><span class="k">class</span> <span class="nc">ArtistBase</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The base class for all Artist like objects.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;musicId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_seo_token</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;seoToken&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pandora_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;pandoraId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span></div>
+
+
+<div class="viewcode-block" id="AlbumBase"><a class="viewcode-back" href="../index.html#pandora.AlbumBase">[docs]</a><span class="k">class</span> <span class="nc">AlbumBase</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The base class for all Album like objects.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">album_seo_token</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;seoToken&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">album_title</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;albumTitle&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pandora_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;pandoraId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span></div>
+
+
+<div class="viewcode-block" id="StationBase"><a class="viewcode-back" href="../index.html#pandora.StationBase">[docs]</a><span class="k">class</span> <span class="nc">StationBase</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The base class for most Station like objects.&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;stationId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pandora_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;pandoraId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_shared</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;isShared&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_transform_allowed</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;isTransformAllowed&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_thumbprint</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;isThumbprint&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_shuffle</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;isShuffle&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_add_seed</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;allowAddSeed&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genre</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;genre&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_delete</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;allowDelete&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_edit_description</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;allowEditDescription&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_rename</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;allowRename&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span></div>
+
+
+<div class="viewcode-block" id="Track"><a class="viewcode-back" href="../index.html#pandora.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">TrackBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A playlist track as returned from client.get_playlist_fragment or client.get_replay_track.</span>
+
+<span class="sd">    Endpoint(s): v1/playlist/getFragment, v1/ondemand/getReplayTrack</span>
+
+<span class="sd">    Base class: TrackBase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;artistMusicId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;trackToken&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">station_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;stationId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">audio_url</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;audioURL&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rating</span> <span class="o">=</span> <span class="n">TrackRating</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gain</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;fileGain&#39;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">audio_encoding</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;audioEncoding&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;artistArt&#39;</span><span class="p">,</span> <span class="p">[])})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genre</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;genre&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_seed</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;isSeed&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_bookmarked</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;isBookmarked&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lyric_id</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lyricSnippet&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lyricId&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lyric_checksum</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lyricSnippet&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;checksum&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Track &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Lyric"><a class="viewcode-back" href="../index.html#pandora.Lyric">[docs]</a><span class="k">class</span> <span class="nc">Lyric</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Track Lyrics as returned from client.get_lyrics.</span>
+
+<span class="sd">    Endpoint(s): v1/music/fullLyrics</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lyric_id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;lyricId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lyric_checksum</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;checksum&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;lines&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">credits</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;credits&#39;</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Lyric &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyric_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lyric_checksum</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ArtistInfo"><a class="viewcode-back" href="../index.html#pandora.ArtistInfo">[docs]</a><span class="k">class</span> <span class="nc">ArtistInfo</span><span class="p">(</span><span class="n">ArtistBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Artist info as returned from client.get_artist_info.</span>
+
+<span class="sd">    Endpoint(s): v1/music/artist</span>
+
+<span class="sd">    Base class: ArtistBase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bio</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;bio&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_bookmarked</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;isBookmarked&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discography</span> <span class="o">=</span> <span class="p">[</span><span class="n">DiscographyAlbum</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;discography&#39;</span><span class="p">,</span> <span class="p">[])]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">similar</span> <span class="o">=</span> <span class="p">[</span><span class="n">SimilarArtist</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;similar&#39;</span><span class="p">,</span> <span class="p">[])]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;ArtistInfo &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">artist_seo_token</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DiscographyAlbum"><a class="viewcode-back" href="../index.html#pandora.DiscographyAlbum">[docs]</a><span class="k">class</span> <span class="nc">DiscographyAlbum</span><span class="p">(</span><span class="n">AlbumBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Artist info discography album</span>
+
+<span class="sd">    Base class: AlbumBase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">album</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">album</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">year</span> <span class="o">=</span> <span class="n">album</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;DiscographyAlbum &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">album_title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">album_seo_token</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SimilarArtist"><a class="viewcode-back" href="../index.html#pandora.SimilarArtist">[docs]</a><span class="k">class</span> <span class="nc">SimilarArtist</span><span class="p">(</span><span class="n">ArtistBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Artist info similar artist</span>
+
+<span class="sd">    Base class: ArtistBase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">similar</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">similar</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;SimilarArtist &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AlbumInfo"><a class="viewcode-back" href="../index.html#pandora.AlbumInfo">[docs]</a><span class="k">class</span> <span class="nc">AlbumInfo</span><span class="p">(</span><span class="n">AlbumBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Album info as returned from client.get_album_info.</span>
+
+<span class="sd">    Endpoint(s): v1/music/album</span>
+
+<span class="sd">    Base class: AlbumBase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">review</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;review&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">album_seo_token</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;seoToken&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_seo_token</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;artistSeoToken&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;artistName&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pandora_id</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;pandoraId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_bookmarked</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;isBookmarked&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amazon_url</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;amazonUrl&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="n">InfoTrack</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tracks&#39;</span><span class="p">,</span> <span class="p">[])]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;AlbumInfo &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">album_title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrackInfo"><a class="viewcode-back" href="../index.html#pandora.TrackInfo">[docs]</a><span class="k">class</span> <span class="nc">TrackInfo</span><span class="p">(</span><span class="n">TrackBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Track info as returned from client.get_track_info</span>
+
+<span class="sd">    Endpoint(s): v1/music/track</span>
+
+<span class="sd">    Base class: TrackBase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">focus_traits</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;focusTraits&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lyric_id</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lyricSnippet&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lyricId&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lyric_checksum</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;lyricSnippet&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;checksum&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_bookmarked</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s1">&#39;isBookmarked&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">similar</span> <span class="o">=</span> <span class="p">[</span><span class="n">InfoTrack</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;similar&#39;</span><span class="p">,</span> <span class="p">[])]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;TrackInfo &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_seo_token</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="InfoTrack"><a class="viewcode-back" href="../index.html#pandora.InfoTrack">[docs]</a><span class="k">class</span> <span class="nc">InfoTrack</span><span class="p">(</span><span class="n">TrackBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class: TrackBase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;InfoTrack &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_seo_token</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Station"><a class="viewcode-back" href="../index.html#pandora.Station">[docs]</a><span class="k">class</span> <span class="nc">Station</span><span class="p">(</span><span class="n">StationBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Station as returned from client.get_stations.</span>
+
+<span class="sd">    Endpoint(s): v1/station/getStations</span>
+
+<span class="sd">    Base class: StationBase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Station &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StationInfo"><a class="viewcode-back" href="../index.html#pandora.StationInfo">[docs]</a><span class="k">class</span> <span class="nc">StationInfo</span><span class="p">(</span><span class="n">StationBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Station info as returned from client.get_station_info.</span>
+
+<span class="sd">    Endpoint(s): v1/station/getStationDetails</span>
+
+<span class="sd">    Base class: StationBase</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seeds</span> <span class="o">=</span> <span class="p">[</span><span class="n">StationSeed</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;seeds&#39;</span><span class="p">,</span> <span class="p">[])]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;StationInfo &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">station_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StationSeed"><a class="viewcode-back" href="../index.html#pandora.StationSeed">[docs]</a><span class="k">class</span> <span class="nc">StationSeed</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Station info station seed&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;artist&#39;</span> <span class="ow">in</span> <span class="n">seed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seed_type</span> <span class="o">=</span> <span class="n">StationSeedType</span><span class="o">.</span><span class="n">ARTIST</span>
+            <span class="n">artist</span> <span class="o">=</span> <span class="n">seed</span><span class="p">[</span><span class="s1">&#39;artist&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;musicId&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">genre_music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">track_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="n">artist</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;artistName&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">album_title</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">station_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">artist</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span>
+        <span class="k">elif</span> <span class="s1">&#39;song&#39;</span> <span class="ow">in</span> <span class="n">seed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seed_type</span> <span class="o">=</span> <span class="n">StationSeedType</span><span class="o">.</span><span class="n">TRACK</span>
+            <span class="n">track</span> <span class="o">=</span> <span class="n">seed</span><span class="p">[</span><span class="s1">&#39;song&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">music_id</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;musicId&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">genre_music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">track_name</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;songTitle&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;artistSummary&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">album_title</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;albumTitle&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">station_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span>
+        <span class="k">elif</span> <span class="s1">&#39;genre&#39;</span> <span class="ow">in</span> <span class="n">seed</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seed_type</span> <span class="o">=</span> <span class="n">StationSeedType</span><span class="o">.</span><span class="n">GENRE</span>
+            <span class="n">genre</span> <span class="o">=</span> <span class="n">seed</span><span class="p">[</span><span class="s1">&#39;genre&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">genre_music_id</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;musicId&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">track_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">album_title</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">station_name</span> <span class="o">=</span> <span class="n">genre</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;stationName&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">genre</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pandora_id</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;pandoraId&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">music_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">music_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">genre_music_id</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;StationSeed &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seed_type</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">music_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StationSeedSuggestion"><a class="viewcode-back" href="../index.html#pandora.StationSeedSuggestion">[docs]</a><span class="k">class</span> <span class="nc">StationSeedSuggestion</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Station seed suggestion as returned from client.get_station_seed_suggestions.</span>
+
+<span class="sd">    Endpoint(s): v1/search/getSeedSuggestions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="n">seed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;musicId&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;StationSeedSuggestion &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SearchResult"><a class="viewcode-back" href="../index.html#pandora.SearchResult">[docs]</a><span class="k">class</span> <span class="nc">SearchResult</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Search result as returned from client.search.</span>
+
+<span class="sd">    Endpoint(s): v1/search/fullSearch</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="n">query</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="o">=</span> <span class="n">ResultType</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="ow">is</span> <span class="n">ResultType</span><span class="o">.</span><span class="n">ARTIST</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">track_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">station_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;musicId&#39;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="ow">is</span> <span class="n">ResultType</span><span class="o">.</span><span class="n">TRACK</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;artistName&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">track_name</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">station_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">music_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;musicId&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">result_type</span> <span class="ow">is</span> <span class="n">ResultType</span><span class="o">.</span><span class="n">GENRE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">track_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">station_name</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">genre_music_id</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;musicId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;SearchResult &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_type</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">music_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StationRecommendation"><a class="viewcode-back" href="../index.html#pandora.StationRecommendation">[docs]</a><span class="k">class</span> <span class="nc">StationRecommendation</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Station recommendation as returned from client.get_station_recommendations.</span>
+
+<span class="sd">    Endpoint(s): v1/search/getStationRecommendations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rec</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">rec_type</span><span class="p">:</span> <span class="n">RecommendationType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recommendation_type</span> <span class="o">=</span> <span class="n">rec_type</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recommendation_type</span> <span class="ow">is</span> <span class="n">RecommendationType</span><span class="o">.</span><span class="n">ARTIST</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;musicId&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">station_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">genre_music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sample_tracks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">recommendation_type</span> <span class="ow">is</span> <span class="n">RecommendationType</span><span class="o">.</span><span class="n">GENRE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">station_name</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">genre_music_id</span> <span class="o">=</span> <span class="n">rec</span><span class="p">[</span><span class="s1">&#39;musicId&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">rec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sample_tracks</span> <span class="o">=</span> <span class="p">[</span><span class="n">InfoTrack</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">rec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sampleTracks&#39;</span><span class="p">,</span> <span class="p">[])]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;headerArt&#39;</span><span class="p">,</span> <span class="p">[])})</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">music_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">artist_music_id</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">genre_music_id</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;StationRecommendation &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recommendation_type</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">music_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GenreCategory"><a class="viewcode-back" href="../index.html#pandora.GenreCategory">[docs]</a><span class="k">class</span> <span class="nc">GenreCategory</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Genre category as returned from client.get_genre_categories.</span>
+
+<span class="sd">    Endpoint(s): v1/music/genrecategories</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;token&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">category</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;GenreCategory &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GenreStation"><a class="viewcode-back" href="../index.html#pandora.GenreStation">[docs]</a><span class="k">class</span> <span class="nc">GenreStation</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Genre station as returned from client.get_genre_category_stations.</span>
+
+<span class="sd">    Endpoint(s): v1/music/genres</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genre_music_id</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;musicId&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">station</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">art</span> <span class="o">=</span> <span class="n">Art</span><span class="p">({</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]:</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">station</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;art&#39;</span><span class="p">,</span> <span class="p">[])})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_tracks</span> <span class="o">=</span> <span class="p">[</span><span class="n">InfoTrack</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">station</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sampleTracks&#39;</span><span class="p">,</span> <span class="p">[])]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;GenreStation &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">genre_music_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Feedback"><a class="viewcode-back" href="../index.html#pandora.Feedback">[docs]</a><span class="k">class</span> <span class="nc">Feedback</span><span class="p">(</span><span class="n">TrackBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Feedback as returned from client.get_station_feedback.</span>
+
+<span class="sd">    Endpoint(s): v1/station/getStationFeedback</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feedback_id</span> <span class="o">=</span> <span class="n">feedback</span><span class="p">[</span><span class="s1">&#39;feedbackId&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_positive</span> <span class="o">=</span> <span class="n">feedback</span><span class="p">[</span><span class="s1">&#39;isPositive&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Feedback &#39;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&#39;&gt;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">feedback_id</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Client"><a class="viewcode-back" href="../index.html#pandora.Client">[docs]</a><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrapper for the `Pandora REST API &lt;https://6xq.net/pandora-apidoc/rest/&gt;`_.</span>
+
+<span class="sd">    Note that :meth:`login()` must be called before any other method.</span>
+
+<span class="sd">    All methods raise :class:`SoupException` on failure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">soupy</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hifi_available</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_auth_token</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_csrf_token</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_csrf_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="s1">&#39;https://www.pandora.com&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">cookies</span><span class="p">[</span><span class="s1">&#39;csrftoken&#39;</span><span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_send_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="s1">&#39;https://www.pandora.com/api/&#39;</span> <span class="o">+</span> <span class="n">method</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;X-CsrfToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_csrf_token</span><span class="p">,</span> <span class="s1">&#39;X-AuthToken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_auth_token</span><span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">json_body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json_body</span>
+
+<div class="viewcode-block" id="Client.login"><a class="viewcode-back" href="../index.html#pandora.Client.login">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtains a users auth-token and stores it in the session.</span>
+<span class="sd">        Required before any other calls.</span>
+
+<span class="sd">        Endpoint(s): v1/auth/login</span>
+
+<span class="sd">        :param email: Users email.</span>
+<span class="sd">        :param password: Users password.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_csrf_token</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_csrf_token</span><span class="p">()</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/auth/login&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="n">email</span><span class="p">,</span>
+            <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="n">password</span><span class="p">,</span>
+        <span class="p">})</span>
+
+        <span class="n">flags</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;config&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;flags&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hifi_available</span> <span class="o">=</span> <span class="s1">&#39;highQualityStreamingAvailable&#39;</span> <span class="ow">in</span> <span class="n">flags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_auth_token</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;authToken&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Client.logout"><a class="viewcode-back" href="../index.html#pandora.Client.logout">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logout of the Pandora session.</span>
+
+<span class="sd">        Endpoint(s): v1/auth/logout</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/auth/logout&#39;</span><span class="p">,</span> <span class="p">{})</span></div>
+
+<div class="viewcode-block" id="Client.get_stations"><a class="viewcode-back" href="../index.html#pandora.Client.get_stations">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_stations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">250</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Station</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtains users stations.</span>
+
+<span class="sd">        Endpoint(s): v1/station/getStations</span>
+
+<span class="sd">        :param amount: Max number of stations to retreive.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/getStations&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;pageSize&#39;</span><span class="p">:</span> <span class="n">amount</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Station</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;stations&#39;</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="Client.transform_shared_station"><a class="viewcode-back" href="../index.html#pandora.Client.transform_shared_station">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">transform_shared_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform a shared station to a user station.</span>
+
+<span class="sd">        Endpoint(s): v1/station/transformShared</span>
+
+<span class="sd">        :param station: The station to be transformed from a shared station to a user station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/transformShared&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;stationId&#39;</span><span class="p">:</span> <span class="n">station</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.create_station"><a class="viewcode-back" href="../index.html#pandora.Client.create_station">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">music_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">search_query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Station</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates a new station.</span>
+
+<span class="sd">        Endpoint(s): v1/station/createStation</span>
+
+<span class="sd">        :param music_id: A music_id, artist_music_id or genre_music_id.</span>
+<span class="sd">        :param name: The name of the new station (64 char limit).</span>
+<span class="sd">        :param search_query: The search query if music_id was got from a search.</span>
+<span class="sd">        :return: If a Station already exists with music_id as one of it&#39;s seeds, \</span>
+<span class="sd">        the Station object will effectively be a copy of that existing Station. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="s1">&#39;mc&#39;</span> <span class="k">if</span> <span class="n">music_id</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;mi&#39;</span>
+        <span class="n">station_code</span> <span class="o">=</span> <span class="n">sig</span> <span class="o">+</span> <span class="n">music_id</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/createStation&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;stationCode&#39;</span><span class="p">:</span> <span class="n">station_code</span><span class="p">,</span>
+            <span class="s1">&#39;stationName&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ellipsize</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;searchQuery&#39;</span><span class="p">:</span> <span class="n">search_query</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">Station</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.delete_station"><a class="viewcode-back" href="../index.html#pandora.Client.delete_station">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes a station.</span>
+
+<span class="sd">        Endpoint(s): v1/station/removeStation</span>
+
+<span class="sd">        :param station: The station to be deleted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/removeStation&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;stationId&#39;</span><span class="p">:</span> <span class="n">station</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.update_station"><a class="viewcode-back" href="../index.html#pandora.Client.update_station">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">,</span>
+                             <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update a station&#39;s name and/or description.</span>
+
+<span class="sd">        Endpoint(s): v1/station/updateStation</span>
+
+<span class="sd">        :param station: The station to be updated.</span>
+<span class="sd">        :param name: The new name of the station (64 char limit) or ``None`` to not change it.</span>
+<span class="sd">        :param description: The new description of the station (4000 char limit) or ``None`` to not change it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/updateStation&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;stationId&#39;</span><span class="p">:</span> <span class="n">station</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ellipsize</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="n">station</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s1">&#39;description&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ellipsize</span><span class="p">(</span><span class="n">description</span><span class="p">,</span> <span class="mi">4000</span><span class="p">)</span> <span class="k">if</span> <span class="n">description</span> <span class="k">else</span> <span class="n">station</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.get_station_info"><a class="viewcode-back" href="../index.html#pandora.Client.get_station_info">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_station_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">,</span>
+                              <span class="n">is_current_station</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StationInfo</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the station&#39;s info.</span>
+
+<span class="sd">        Endpoint(s): v1/station/getStationDetails</span>
+
+<span class="sd">        :param station: The station to be get the info for.</span>
+<span class="sd">        :param is_current_station: If the station is the current station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/getStationDetails&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;stationId&#39;</span><span class="p">:</span> <span class="n">station</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="s1">&#39;isCurrentStation&#39;</span><span class="p">:</span> <span class="n">is_current_station</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">StationInfo</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.get_station_feedback"><a class="viewcode-back" href="../index.html#pandora.Client.get_station_feedback">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_station_feedback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">,</span> <span class="n">track_rating</span><span class="p">:</span> <span class="n">TrackRating</span><span class="p">,</span>
+                                   <span class="n">amount</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">start_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Feedback</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a station&#39;s feedback.</span>
+
+<span class="sd">        Endpoint(s): v1/station/getStationFeedback</span>
+
+<span class="sd">        :param station: The station to be get the feedback of.</span>
+<span class="sd">        :param track_rating: TrackRating.LOVED or TrackRating.BANNED</span>
+<span class="sd">        :param amount: The max number of feedbacks to return.</span>
+<span class="sd">        :param start_index: The starting index of the feedbacks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">track_rating</span> <span class="ow">is</span> <span class="n">TrackRating</span><span class="o">.</span><span class="n">NONE</span><span class="p">:</span> <span class="c1"># Nothing to do</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">is_positive</span> <span class="o">=</span> <span class="n">track_rating</span> <span class="ow">is</span> <span class="n">TrackRating</span><span class="o">.</span><span class="n">LOVED</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/getStationFeedback&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;pageSize&#39;</span><span class="p">:</span> <span class="n">amount</span><span class="p">,</span>
+            <span class="s1">&#39;startIndex&#39;</span><span class="p">:</span> <span class="n">start_index</span><span class="p">,</span>
+            <span class="s1">&#39;stationId&#39;</span><span class="p">:</span> <span class="n">station</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="s1">&#39;positive&#39;</span><span class="p">:</span> <span class="n">is_positive</span><span class="p">,</span> 
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Feedback</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;feedback&#39;</span><span class="p">,</span> <span class="p">[])]</span> </div>
+
+<div class="viewcode-block" id="Client.add_station_seed"><a class="viewcode-back" href="../index.html#pandora.Client.add_station_seed">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_station_seed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">,</span> <span class="n">music_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a seed to a station.</span>
+
+<span class="sd">        Endpoint(s): v1/station/addSeed</span>
+
+<span class="sd">        :param station: The station to add the seed to.</span>
+<span class="sd">        :param music_id: A music_id or artist_music_id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/addSeed&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;stationId&#39;</span><span class="p">:</span> <span class="n">station</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="s1">&#39;musicId&#39;</span><span class="p">:</span> <span class="n">music_id</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.delete_station_seed"><a class="viewcode-back" href="../index.html#pandora.Client.delete_station_seed">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_station_seed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">,</span> <span class="n">music_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete a seed from a station.</span>
+
+<span class="sd">        Endpoint(s): v1/station/deleteSeed</span>
+
+<span class="sd">        :param station: The station to delete the seed from.</span>
+<span class="sd">        :param music_id: A music_id or artist_music_id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/deleteSeed&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;stationId&#39;</span><span class="p">:</span> <span class="n">station</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="s1">&#39;musicId&#39;</span><span class="p">:</span> <span class="n">music_id</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.get_station_seed_suggestions"><a class="viewcode-back" href="../index.html#pandora.Client.get_station_seed_suggestions">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_station_seed_suggestions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">,</span> <span class="n">music_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                                           <span class="n">max_results</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">StationSeedSuggestion</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get station seed suggestions.</span>
+
+<span class="sd">        Endpoint(s): v1/search/getSeedSuggestions</span>
+
+<span class="sd">        :param station: The station to get seed suggestions for.</span>
+<span class="sd">        :param music_id: A track music_id or artist_music_id.</span>
+<span class="sd">        :param max_results: The max seed suggestions to return.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/search/getSeedSuggestions&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;stationId&#39;</span><span class="p">:</span> <span class="n">station</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="s1">&#39;seedMusicId&#39;</span><span class="p">:</span> <span class="n">music_id</span><span class="p">,</span>
+            <span class="s1">&#39;maxResults&#39;</span><span class="p">:</span> <span class="n">max_results</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">StationSeedSuggestion</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">response</span><span class="p">]</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_ellipsize</span><span class="p">(</span><span class="n">string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">string</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_size</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="p">[:</span><span class="n">max_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;…&#39;</span>
+        <span class="k">return</span> <span class="n">string</span>
+
+<div class="viewcode-block" id="Client.get_playlist_fragment"><a class="viewcode-back" href="../index.html#pandora.Client.get_playlist_fragment">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_playlist_fragment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">station</span><span class="p">:</span> <span class="n">Station</span><span class="p">,</span> <span class="n">is_start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                    <span class="n">audio_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AudioFormat</span><span class="p">]</span> <span class="o">=</span> <span class="n">AudioFormat</span><span class="o">.</span><span class="n">MP3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a playlist (list of tracks) for a station.</span>
+
+<span class="sd">        Endpoint(s): v1/playlist/getFragment</span>
+
+<span class="sd">        :param station: Station to get tracks for.</span>
+<span class="sd">        :param is_start: If this is the first playlist.</span>
+<span class="sd">        :param audio_format: Format for audio_url in tracks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/playlist/getFragment&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;stationId&#39;</span><span class="p">:</span> <span class="n">station</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="s1">&#39;isStationStart&#39;</span><span class="p">:</span> <span class="n">is_start</span><span class="p">,</span>
+            <span class="s1">&#39;fragmentRequestReason&#39;</span><span class="p">:</span> <span class="s1">&#39;Normal&#39;</span><span class="p">,</span>  <span class="c1"># TODO</span>
+            <span class="s1">&#39;audioFormat&#39;</span><span class="p">:</span> <span class="n">audio_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>  <span class="c1"># TODO: aacplus and maybe more formats</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Track</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;tracks&#39;</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="Client.tired_track"><a class="viewcode-back" href="../index.html#pandora.Client.tired_track">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">tired_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a track Tired.</span>
+
+<span class="sd">        Endpoint(s): v1/listener/addTiredSong</span>
+
+<span class="sd">        :param track: The track to be set Tired.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/listener/addTiredSong&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;trackToken&#39;</span><span class="p">:</span> <span class="n">track</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.add_bookmark"><a class="viewcode-back" href="../index.html#pandora.Client.add_bookmark">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">add_bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">music_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bookmark a track or artist.</span>
+
+<span class="sd">        Endpoint(s): v1/bookmark/add</span>
+
+<span class="sd">        :param music_id: music_id or artist_music_id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/bookmark/add&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;musicId&#39;</span><span class="p">:</span> <span class="n">music_id</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.delete_bookmark"><a class="viewcode-back" href="../index.html#pandora.Client.delete_bookmark">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_bookmark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">music_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete a previously bookmarked track or artist.</span>
+
+<span class="sd">        Endpoint(s): v1/bookmark/delete</span>
+
+<span class="sd">        :param music_id: music_id or artist_music_id.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/bookmark/delete&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;musicId&#39;</span><span class="p">:</span> <span class="n">music_id</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.track_started"><a class="viewcode-back" href="../index.html#pandora.Client.track_started">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">track_started</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Signal that a track has started.</span>
+
+<span class="sd">        Endpoint(s): v1/station/trackStarted</span>
+
+<span class="sd">        :param track: The track to be started.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/trackStarted&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;trackToken&#39;</span><span class="p">:</span> <span class="n">track</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.playback_paused"><a class="viewcode-back" href="../index.html#pandora.Client.playback_paused">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">playback_paused</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Signal that playback has paused.</span>
+
+<span class="sd">        Endpoint(s): v1/station/playbackPaused</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/playbackPaused&#39;</span><span class="p">,</span> <span class="p">{})</span></div>
+
+<div class="viewcode-block" id="Client.playback_resumed"><a class="viewcode-back" href="../index.html#pandora.Client.playback_resumed">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">playback_resumed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force_active</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Signal that playback has resumed.</span>
+
+<span class="sd">        Endpoint(s): v1/station/playbackResumed</span>
+
+<span class="sd">        :param force_active: If this session is to be forced as the active session.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/playbackResumed&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;forceActive&#39;</span><span class="p">:</span> <span class="n">force_active</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.get_explicit_content_filter"><a class="viewcode-back" href="../index.html#pandora.Client.get_explicit_content_filter">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_explicit_content_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get if the explicit content filter is enabled.</span>
+
+<span class="sd">        Endpoint(s): v1/listener/updateSettings</span>
+
+<span class="sd">        :return: The state of the Explicit Content Filter. ``True`` if enabled, ``False`` if not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/listener/updateSettings&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">return</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;explicitContentFilterEnabled&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Client.set_explicit_content_filter"><a class="viewcode-back" href="../index.html#pandora.Client.set_explicit_content_filter">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_explicit_content_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enable or disable the explicit content filter.</span>
+
+<span class="sd">        Endpoint(s): v1/listener/updateAccount</span>
+
+<span class="sd">        :param enable: If the filter should be enabled.</span>
+<span class="sd">        :param email: Users email.</span>
+<span class="sd">        :param password: Users password.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/listener/updateAccount&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;currentUsername&#39;</span><span class="p">:</span> <span class="n">email</span><span class="p">,</span>
+            <span class="s1">&#39;currentPassword&#39;</span><span class="p">:</span> <span class="n">password</span><span class="p">,</span>
+            <span class="s1">&#39;enableExplicitContentFilter&#39;</span><span class="p">:</span> <span class="n">enable</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.rate_track"><a class="viewcode-back" href="../index.html#pandora.Client.rate_track">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">rate_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">,</span> <span class="n">track_rating</span><span class="p">:</span> <span class="n">TrackRating</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rate a track.</span>
+
+<span class="sd">        Endpoint(s): v1/station/deleteFeedback, v1/station/addFeedback</span>
+
+<span class="sd">        :param track: The track to be rated.</span>
+<span class="sd">        :param track_rating: The new TrackRating.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">is_positive</span> <span class="o">=</span> <span class="n">track_rating</span> <span class="ow">is</span> <span class="n">TrackRating</span><span class="o">.</span><span class="n">LOVED</span>
+
+        <span class="k">if</span> <span class="n">track_rating</span> <span class="ow">is</span> <span class="n">TrackRating</span><span class="o">.</span><span class="n">NONE</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">rating</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">TrackRating</span><span class="o">.</span><span class="n">NONE</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/deleteFeedback&#39;</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="s1">&#39;trackToken&#39;</span><span class="p">:</span> <span class="n">track</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
+                    <span class="s1">&#39;isPositive&#39;</span><span class="p">:</span> <span class="n">is_positive</span><span class="p">,</span>
+                <span class="p">})</span>
+
+        <span class="k">elif</span> <span class="n">track_rating</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">track</span><span class="o">.</span><span class="n">rating</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/addFeedback&#39;</span><span class="p">,</span> <span class="p">{</span>
+                <span class="s1">&#39;trackToken&#39;</span><span class="p">:</span> <span class="n">track</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
+                <span class="s1">&#39;isPositive&#39;</span><span class="p">:</span> <span class="n">is_positive</span><span class="p">,</span>
+            <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.delete_feedback"><a class="viewcode-back" href="../index.html#pandora.Client.delete_feedback">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_feedback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feedback</span><span class="p">:</span> <span class="n">Feedback</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete station feedback.</span>
+
+<span class="sd">        Endpoint(s): v1/station/deleteFeedback</span>
+
+<span class="sd">        :param feedback: The station feedback to delete.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/station/deleteFeedback&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;feedbackId&#39;</span><span class="p">:</span> <span class="n">feedback</span><span class="o">.</span><span class="n">feedback_id</span><span class="p">,</span>
+            <span class="s1">&#39;isPositive&#39;</span><span class="p">:</span> <span class="n">feedback</span><span class="o">.</span><span class="n">is_positive</span><span class="p">,</span>
+        <span class="p">})</span></div>
+
+<div class="viewcode-block" id="Client.get_replay_track"><a class="viewcode-back" href="../index.html#pandora.Client.get_replay_track">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_replay_track</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">,</span> <span class="n">last_played_track_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Track</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a fresh track for replay.</span>
+
+<span class="sd">        Endpoint(s): v1/ondemand/getReplayTrack</span>
+
+<span class="sd">        :param track: The track to be replayed.</span>
+<span class="sd">        :param last_played_track_token: The trackToken of the last played track.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/ondemand/getReplayTrack&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;stationId&#39;</span><span class="p">:</span> <span class="n">track</span><span class="o">.</span><span class="n">station_id</span><span class="p">,</span>
+            <span class="s1">&#39;trackToken&#39;</span><span class="p">:</span> <span class="n">track</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
+            <span class="s1">&#39;lastPlayedTrackToken&#39;</span><span class="p">:</span> <span class="n">last_played_track_token</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">Track</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;replayTrack&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Client.get_artist_info"><a class="viewcode-back" href="../index.html#pandora.Client.get_artist_info">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_artist_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">artist_seo_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ArtistInfo</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get artist info.</span>
+
+<span class="sd">        Endpoint(s): v1/music/artist</span>
+
+<span class="sd">        :param artist_seo_token: A artist_seo_token.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/music/artist&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="n">artist_seo_token</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">ArtistInfo</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.get_album_info"><a class="viewcode-back" href="../index.html#pandora.Client.get_album_info">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_album_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">album_seo_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AlbumInfo</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get album info.</span>
+
+<span class="sd">        Endpoint(s): v1/music/album</span>
+
+<span class="sd">        :param album_seo_token: A album_seo_token.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/music/album&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="n">album_seo_token</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">AlbumInfo</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.get_track_info"><a class="viewcode-back" href="../index.html#pandora.Client.get_track_info">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_track_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track_seo_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrackInfo</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get track info.</span>
+
+<span class="sd">        Endpoint(s): v1/music/track</span>
+
+<span class="sd">        :param track_seo_token: A track_seo_token.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/music/track&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="n">track_seo_token</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">TrackInfo</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.get_lyrics"><a class="viewcode-back" href="../index.html#pandora.Client.get_lyrics">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_lyrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lyric</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get track lyrics.</span>
+
+<span class="sd">        Endpoint(s): v1/music/fullLyrics</span>
+
+<span class="sd">        :param track: the track to get the lyrics for.</span>
+<span class="sd">        :return: The Lyric object attributes will be empty \</span>
+<span class="sd">        if there is no track.lyric_id or track.lyric_checksum.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">track</span><span class="o">.</span><span class="n">lyric_id</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">track</span><span class="o">.</span><span class="n">lyric_checksum</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Lyric</span><span class="p">({})</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/music/fullLyrics&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;trackUid&#39;</span><span class="p">:</span> <span class="n">track</span><span class="o">.</span><span class="n">music_id</span><span class="p">,</span>
+            <span class="s1">&#39;lyricId&#39;</span><span class="p">:</span> <span class="n">track</span><span class="o">.</span><span class="n">lyric_id</span><span class="p">,</span>
+            <span class="s1">&#39;checksum&#39;</span><span class="p">:</span> <span class="n">track</span><span class="o">.</span><span class="n">lyric_checksum</span><span class="p">,</span>
+            <span class="s1">&#39;nonExplicit&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="c1"># TODO Tie this to the explicit content filter setting</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="n">Lyric</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.get_genre_categories"><a class="viewcode-back" href="../index.html#pandora.Client.get_genre_categories">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_genre_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">GenreCategory</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get genre categories.</span>
+
+<span class="sd">        Endpoint(s): v1/music/genrecategories </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/music/genrecategories&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">GenreCategory</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;categories&#39;</span><span class="p">,</span> <span class="p">[])]</span></div>
+
+<div class="viewcode-block" id="Client.get_genre_category_stations"><a class="viewcode-back" href="../index.html#pandora.Client.get_genre_category_stations">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_genre_category_stations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genre_category</span><span class="p">:</span> <span class="n">GenreCategory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">GenreStation</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get genre stations for a category.</span>
+
+<span class="sd">        Endpoint(s): v1/music/genres</span>
+
+<span class="sd">        :param genre_category: The genre category to get the stations for.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/music/genres&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;categoryToken&#39;</span><span class="p">:</span> <span class="n">genre_category</span><span class="o">.</span><span class="n">token</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">GenreStation</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;genres&#39;</span><span class="p">,</span> <span class="p">[])]</span></div>
+
+<div class="viewcode-block" id="Client.get_station_recommendations"><a class="viewcode-back" href="../index.html#pandora.Client.get_station_recommendations">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_station_recommendations</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">StationRecommendation</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get station recommendations.</span>
+
+<span class="sd">        Endpoint(s): v1/search/getStationRecommendations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/search/getStationRecommendations&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">StationRecommendation</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">RecommendationType</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Client.search"><a class="viewcode-back" href="../index.html#pandora.Client.search">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">search_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SearchType</span><span class="p">]</span> <span class="o">=</span> <span class="n">SearchType</span><span class="o">.</span><span class="n">ALL</span><span class="p">,</span>
+                     <span class="n">max_items_per_result_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SearchResult</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Obtains search results.</span>
+
+<span class="sd">        Endpoint(s): v1/search/fullSearch</span>
+
+<span class="sd">        :param query: A query string.</span>
+<span class="sd">        :param search_type: SearchType.</span>
+<span class="sd">        :param max_items_per_result_type: Max items per SearchResult type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send_message</span><span class="p">(</span><span class="s1">&#39;v1/search/fullSearch&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
+            <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="n">search_type</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+            <span class="s1">&#39;maxItemsPerCategory&#39;</span><span class="p">:</span> <span class="n">max_items_per_result_type</span><span class="p">,</span>
+        <span class="p">})</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">SearchResult</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">query</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]]</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Patrick Griffis.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'2.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
