@@ -314,7 +314,7 @@ class StationSeed:
             self.artist_name = artist['artistName']
             self.album_title = ''
             self.station_name = ''
-            self.artist_seo_token = seed['SeoToken']
+            self.artist_seo_token = seed['seoToken']
             self.track_seo_token = ''
             self.art = Art({i['size']: i['url'] for i in artist.get('art', [])})
         elif 'song' in seed:
@@ -327,7 +327,7 @@ class StationSeed:
             self.artist_name = track['artistSummary']
             self.album_title = track['albumTitle']
             self.artist_seo_token = ''
-            self.track_seo_token = seed['SeoToken']
+            self.track_seo_token = seed['seoToken']
             self.station_name = ''
             self.art = Art({i['size']: i['url'] for i in track.get('art', [])})
         elif 'genre' in seed:
@@ -380,7 +380,7 @@ class SearchResult:
             self.station_name = ''
             self.music_id = ''
             self.artist_music_id = result['musicId']
-            self.artist_seo_token = result['SeoToken']
+            self.artist_seo_token = result['seoToken']
             self.track_seo_token = ''
             self.listener_count = result['listenerCount']
         elif self.result_type is ResultType.TRACK:
@@ -390,7 +390,7 @@ class SearchResult:
             self.music_id = result['musicId']
             self.artist_music_id = ''
             self.artist_seo_token = ''
-            self.track_seo_token = result['SeoToken']
+            self.track_seo_token = result['seoToken']
             self.listener_count = 0
         elif self.result_type is ResultType.GENRE:
             self.artist_name = ''
@@ -405,7 +405,8 @@ class SearchResult:
         self.art = Art({i['size']: i['url'] for i in result.get('art', [])})
 
     def __repr__(self):
-        return "<SearchResult '{}: {}'>".format(self.result_type.name, self.music_id)
+        music_id = self.artist_music_id or self.music_id or self.genre_music_id
+        return "<SearchResult '{}: {}'>".format(self.result_type.name, music_id)
 
 
 class StationRecommendation:
