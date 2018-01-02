@@ -13,6 +13,7 @@ gi.require_version('Soup', '2.4')
 from gi.repository import GObject, Gio, Soup
 import json
 from typing import Awaitable, Dict
+from soupy_status import SoupyStatus
 
 SUPPORTED_PROXY_PROTOCOLS = (
     'socks://',
@@ -30,18 +31,18 @@ class SoupException(Exception):
         self.error_message = error_message
 
     @classmethod
-    def new_from_message(cls, soup_message: Soup.Message):
+    def new_from_message(cls, soup_message: Soup.Message, status_name: str):
         data = soup_message.props.response_body_data.get_data()
+        error_message = []
         if data:
             data = json.loads(data.decode('utf-8'))
             message = data['message']
-            error_code = data['errorCode']
-            error_message = data['errorString']
+            error_message.append(data['errorString'])
         else:
             message = 'HTTP Error'
-            error_code = soup_message.props.status_code
-            error_message = Soup.Status(error_code).value_name
-        return cls(message, error_code, error_message)
+        error_message.append(status_name)
+        error_message = '; '.join(error_message)
+        return cls(message, soup_message.props.status_code, error_message)
 
     def __str__(self) -> str:
         return '{} ({}): {}'.format(self.error_message, self.error_code, self.message)
@@ -171,8 +172,12 @@ class Session(GObject.Object):
         future = asyncio.Future()  # type: asyncio.Future
 
         def on_response(session, response_message):
-            if response_message.status_code != 200:
-                future.set_exception(SoupException.new_from_message(response_message))
+            try:
+                status = SoupyStatus(response_message.status_code)
+            except (TypeError, ValueError):
+                status = SoupyStatus.UNKNOWN_STATUS_CODE 
+            if status is not SoupyStatus.OK:
+                future.set_exception(SoupException.new_from_message(response_message, status.name))
             else:
                 future.set_result(Message(response_message))
 
